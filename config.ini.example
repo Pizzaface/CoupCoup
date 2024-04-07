@@ -1,0 +1,135 @@
+[config]
+; You must include one of the following:
+;GOOGLE_API_KEY: <YOUR_GOOGLE_AI_STUDIO_API_KEY>
+;GOOGLE_PROJECT_ID: <YOUR_GOOGLE_PROJECT_ID>
+
+; This defines the list of coupon sources that are supported, provided as a JSON Array (double quotes required)
+COUPON_SOURCES: ["ShopRite", "DollarGeneral", "Newspaper", "Kroger", "FamilyDollar", "Meijer", "FredMeyer", "FrysFood", "CouponsCom", "FoodCity", "FoodLion"]
+
+; This defines the list of stores that are supported, provided as a JSON Array (double quotes required)
+INCLUDED_STORES: ["Walgreens", "CVS", "KrogerMidAtlantic", "Publix", "FoodCity", "DollarGeneral", "FoodLion", "Ingles", "WinnDixie", "Meijer", "FamilyDollar", "HyVee", "Albertsons", "HarrisTeeter", "AcmeMarkets", "Hannaford", "StopAndShop", "RousesSupermarkets", "SmithsFoodAndDrug", "GiantFood", "ShopRite", "JewelOsco", "KingSoopers", "Sprouts", "FredMeyer", "FrysFood", "HEB"]
+
+; Model settings - this controls the params for the model
+MODEL_NAME: gemini-1.0-pro-latest
+MODEL_TEMP: 0.1
+MODEL_TOP_K: 30
+MODEL_TOP_P: 0.2
+
+; This is information we use to grab a map of the store location
+[directions]
+openrouteservice_api_key: <YOUR_OPEN_ROUTE_SERVICE_API_KEY>
+
+; You must include at least one of the following, or any combination of the following - the more specific, the better
+address: 1600 Pennsylvania Avenue NW
+locality: Washington
+region: DC
+postalcode: 20500
+
+
+; Change the store_code - probably not the access_token
+[cvspharmacy]
+store_code: 4130
+access_token: d005d9bbce4a77a9f3908b83e38aae19
+
+[winndixie]
+store_code: 0002
+access_token: 144f255172b672dfe5bd75d2e8fb126a
+
+[dollargeneral]
+store_code: 526
+access_token: 00be606cd7cb8b0cf999e3c7b038a2fe
+
+[krogermidatlantic]
+store_code: 00328
+access_token: 37ef85f7add115eb1f7b9c870b5138f1
+
+[ingles]
+store_code: 372
+session_id: 93D39C326D307812EA474558299F1F38
+
+[publix]
+store_code: 2729195
+
+[foodcity]
+store_code: 601
+
+[meijer]
+store_code: 258
+access_token: 81771d0c149847a93bc30b8e5b65bffb
+
+[hyvee]
+store_code: 1038
+access_token: 3858c06074010b8c23cdc5010323375d
+
+[albertsons]
+store_code: 177
+access_token: bfe2071d14d1448296a13b19311ce041
+
+[harristeeter]
+store_code: 00165
+access_token: 73fe8b09ea4414952d6882604003ae39
+
+[familydollar]
+store_code: 1986
+access_token: 86671e3087ed1ff42de6ccd791b7fe3d
+
+[foodlion]
+store_code: 1253
+access_token: 9f64429683bfc0098acb124204462a56
+
+[safeway]
+store_code: 3132
+access_token: 7749fa974b9869e8f57606ac9477decf
+
+[acmemarkets]
+store_code: 2977
+access_token: 83190a72ea0926eda2dbd52be2e23ee5
+
+[hannaford]
+store_code: 8253
+access_token: 44a88b34986f2475d50fe0734b6ad88d
+
+[stopandshop]
+store_code: 0662
+access_token: 810f9efe5a864eb08542e5488c78624e
+
+[rousessupermarkets]
+store_code: 53
+access_token: 75a1939758bae707489d26030ad22b43
+
+[smithsfoodanddrug]
+store_code: 00119
+access_token: 08afb47dca88689334e60150188b9b2e
+
+[walgreens]
+store_code: 9428
+
+[giantfood]
+store_code: 0308
+access_token: 10cd90de49dcfe6db1e2ff6239904c85
+
+[shoprite]
+store_code: 526
+access_token: 1c397596a4ba9c50c3fad26b0fcdbaa6
+
+[jewelosco]
+store_code: 3441
+access_token: aedcc3dc3afc882f187dbdd32b6db995
+
+[kingsoopers]
+store_code: 0005
+access_token: a9e9e35ca22f01dd4bcd953a300a41c5
+
+[sprouts]
+store_code: 2
+access_token: 7ae4361bb1d0f96c2f77b0aae580cbc1
+
+[fredmeyer]
+store_code: 00600
+access_token: 513b672980ee9d507d539c208c77bae4
+
+[frysfood]
+store_code: 00129
+access_token: b1d2a75c0dd965d40dcdde052f07581f
+
+[heb]

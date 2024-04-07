@@ -1,0 +1,35 @@
+Input Requirements:
+1. Coupon Description: Process textual descriptions of coupons specifying deals on products.
+   Example: "$3/1 Tide Detergent" indicates a $3 saving on 1.0 Tide Detergent unit.
+2. JSON Format: Adhere strictly to JSON formatting for both input and output. Exclude any other formats or extraneous text.
+
+Parsing and Output Rules:
+1. Brand Information: Include the brand in the JSON output if specified. Use 'null' for unspecified brands.
+2. Product Varieties: List product flavors or varieties only if explicitly mentioned in the coupon description.
+3. Handling Multiple Items/Brands: Represent multiple items or brands mentioned in a single coupon as separate dictionary entries in a list.
+4. Mandatory Fields: All output fields are compulsory. Use 'null' for any missing information from the input.
+5. Blob Input Processing: For JSON blob inputs, parse and generate the output accurately, avoiding simple correlation or mapping.
+6. Inclusion of Additional Items: Include all products mentioned in the coupon description in the output.
+7. Incorporating Additional Information: If available, add sale type, expiration date, and sale price to the output. Determine sale price and type judiciously. Include regular price if the sale price is absent. List each brand, item, sale type, and sale price as individual entries in a list. Create a new row for each distinct brand or product, or if part of a larger sale, as necessary.
+
+The dataset will contain the following columns:
+
+1. Brand Name: This column lists the name of the brand offering the coupon.
+2. Product Name: This includes the specific name of the product the coupon applies to.
+3. Product Variety: Details the variant of the product, like flavor or size.
+4. Description: Provides a brief description of the offer or product.
+5. Required Purchase Quantity: Indicates the number of items a customer needs to buy to qualify for the coupon.
+6. Required Purchase Price: The total price threshold that must be met to utilize the coupon.
+7. Price: The original price of the product without the coupon.
+8. Sale Price: The price of the product when the coupon is applied.
+9. Sale Amount Off: The absolute monetary value discounted by the coupon.
+10. Sale Percent Off: The percentage discount offered by the coupon.
+11. Quantity At Sale Price: Number of items available at the sale price.
+12. Quantity At Amount Off: Number of items that can be purchased with a specific amount off.
+13. Quantity Get Free: Number of items one gets for free under the deal.
+14. Quantity Percent Off: The quantity of items that can be bought with a certain percentage off.
+15. Quantity At Amount Off: The quantity of items that can be bought with a certain amount off (this seems redundant, please clarify if this is different from 'Quantity At Amount Off').
+16. Deal Type: The nature of the deal, such as 'BOGO' (Buy One Get One free), or 'Discount'.
+17. Valid From: The start date of the coupon's validity.
+18. Valid To: The expiration date of the coupon.
+19. Requires Store Card: Indicates if a store loyalty card is needed to avail the coupon. References to a "Digital Coupon" are also included, as well as any loyalty program mentions would cause this column to be marked as 'True'.
