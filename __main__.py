@@ -51,7 +51,7 @@ Worksheet.to_list = lambda ws: list(ws.iter_rows(values_only=True))
 async def main():
     Path('output/stores').mkdir(exist_ok=True, parents=True)
     section = _setup_config()
-    #
+    
     await _handle_stores(section)
     await _handle_coupons(section)
     await _compare_products()
@@ -213,6 +213,7 @@ async def determine_store_paths():
     begin_long, begin_lat = geocode_zip(**directions_config)
     api_key = directions_config['openrouteservice_api_key']
 
+    included_stores = ["Walgreens", "Ingles"]
     locations_by_store = get_locations_by_store(
         api_key=api_key,
         begin_lat=begin_lat,
@@ -258,18 +259,22 @@ async def create_shopping_route(
         if store_name not in store_colors:
             store_colors[store_name] = random.choice(POSSIBLE_STORE_COLORS)
 
-        for loc in locs:
-            tooltip = folium.map.Tooltip(store_name, sticky=True)
-            folium.Marker(
+        for i, loc in enumerate(locs):
+            html_text = f"""<a href='#' onclick="loadSheet('{store_name}')" data-toggle="modal" data-target="#sheetModal">{store_name}</span>"""
+
+            tooltip = folium.map.Popup(html=html_text, max_width=2650)
+
+            marker = folium.Marker(
                 location=[loc[1], loc[0]],
                 popup=store_name,
-                tooltip=tooltip,
                 icon=folium.Icon(
                     icon='shopping-cart',
                     prefix='fa',
                     color=store_colors[store_name],
                 ),
-            ).add_to(m)
+            )
+            marker.add_child(tooltip)
+            m.add_child(marker)
 
     logger.debug(f'Writing map...')
 
@@ -395,13 +400,7 @@ async def _handle_stores(section):
         if store_name in included_stores
     ]
 
-    async with aiometer.amap(
-        async_fn=_run_store, args=store_objs, max_at_once=3
-    ) as results:
-        async for result in results:
-            if isinstance(result, Exception):
-                logger.error(f'Error scraping store: {result}')
-                continue
+    await aiometer.run_on_each(async_fn=_run_store, args=store_objs, max_at_once=3)
 
     print('Finished scraping stores')
 
