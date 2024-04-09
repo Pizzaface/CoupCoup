@@ -95,6 +95,7 @@ class Ingles(BrowserStore):
                     }
                 )
 
+        await self.browser.close()
         await self.process_queue()
 
     async def _extract_categories(self):

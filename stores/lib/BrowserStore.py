@@ -11,7 +11,7 @@ from tqdm.asyncio import tqdm as tqdm_asyncio
 class BrowserStore(Store):
     _browser: None | Browser = None
     _page: None | Page = None
-    headless: bool = False
+    headless: bool = True
 
     @property
     def browser(self):

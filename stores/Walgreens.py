@@ -121,17 +121,21 @@ class Walgreens(Store):
                     url, headers=headers, json=json_body
                 )
 
-                if response.status_code == 200:
-                    data = response.json()
-
-                    subcollections = data.get('config', {}).get(
-                        'subcollections', []
+                if response.status_code != 200:
+                    raise Exception(
+                        f'Failed to grab subcollections: {response.status_code}'
                     )
 
-                    for subcollection in subcollections:
-                        self.collection_ids.append(
-                            subcollection['collectionId']
-                        )
+                data = response.json()
+
+                subcollections = data.get('config', {}).get(
+                    'subcollections', []
+                )
+
+                for subcollection in subcollections:
+                    self.collection_ids.append(
+                        subcollection['collectionId']
+                    )
 
     async def grab_products(self):
         async with httpx.AsyncClient(timeout=90, transport=self.httpx_transport) as client:
@@ -167,12 +171,14 @@ class Walgreens(Store):
                     url, headers=headers, json=json_body
                 )
 
-                if response.status_code == 200:
-                    data = response.json()
+                if response.status_code != 200:
+                    continue
 
-                    offers = data.get('offers', [])
+                data = response.json()
 
-                    await self.clean_coupons(offers)
+                offers = data.get('offers', [])
+
+                await self.clean_coupons(offers)
 
     async def clean_coupons(self, offers):
         for offer in offers:

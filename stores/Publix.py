@@ -36,14 +36,10 @@ class Publix(BrowserStore):
     async def handle_flyers(self):
         await self.load_page()
 
-        # The left column of the page is the departments
         left_col = await self._page.querySelector('.leftcolumn')
-
         departments = await left_col.querySelectorAll('.listing')
-
         self.categories = await self._get_categories(departments)
 
-        # Loop through each department
         for category in self.categories:
             try:
                 await self.page.goto(category, waitUntil='networkidle2')
@@ -55,11 +51,10 @@ class Publix(BrowserStore):
 
             items = await self.page.querySelectorAll('.unitB')
 
-            # Gather all handle_item tasks
             tasks = [self.handle_item(item) for item in items]
             await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Process the queue
+        await self.browser.close()
         await self.process_queue()
 
     @staticmethod
