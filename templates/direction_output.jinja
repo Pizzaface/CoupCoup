@@ -7,7 +7,8 @@
         <!-- Include Bootstrap CSS -->
         <link rel="stylesheet"
               href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.css">
+        <link rel="stylesheet"
+              href="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.css">
         <style>
             #xspreadsheet {
                 width: 100%;
@@ -111,19 +112,22 @@
                 const lastRow = worksheet['!ref'].split(':')[1].replace(/\D/g, '');
 
                 for (const column of _buildColumnsArray(worksheet)) {
-                  let maxCellLength = 0;
+                    let maxCellLength = 0;
 
-                  for (let row = 1; row <= lastRow + 1; row++) {
-                    const cell = worksheet[`${column}${row}`];
+                    for (let row = 1; row <= lastRow + 1; row++) {
+                        const cell = worksheet[`${column}${row}`];
 
-                    if (cell != null) {
-                      const cellLength = Math.ceil(cell.v.length * 1.1); // adjust column width multiplier
-                      if (cellLength > maxCellLength) maxCellLength = cellLength;
+                        if (cell != null) {
+                            const cellLength = Math.ceil(cell.v.length * 1.1); // adjust column width multiplier
+                            if (cellLength > maxCellLength) maxCellLength = cellLength;
+                        }
                     }
-                  }
 
-                  objectMaxLength.push({ width: maxCellLength });
-            }}
+                    objectMaxLength.push({
+                        width: maxCellLength
+                    });
+                }
+            }
 
             function loadSheet(sheetName) {
                 fetch(file)
@@ -133,36 +137,39 @@
 
 
 
-                        const workbook = XLSX.read(data, { type: 'array', sheets: [sheetName] });
+                        const workbook = XLSX.read(data, {
+                            type: 'array',
+                            sheets: [sheetName]
+                        });
                         const json = stox(workbook);
                         window.grid.loadData(json);
-                        console.log(json);
                         $('#sheetModalLabel').text(sheetName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
 
                         const newBook = xtos(window.grid.getData());
                         const jsonSheet = XLSX.utils.json_to_sheet(json);
-                        console.log(jsonSheet);
                         /* create column metadata object if it does not exist */
                         const columnCount = Object.values(json[0].rows[0]['cells']).length;
-                        console.log(columnCount);
-                        console.log(jsonSheet['!cols']);
                         for (const col in jsonSheet['!cols']) {
                             debugger;
                             if (jsonSheet['!cols'][col] == null) {
-                                jsonSheet['!cols'][col] = { width: 10 };
+                                jsonSheet['!cols'][col] = {
+                                    width: 10
+                                };
                             }
                         }
                     });
 
 
             }
-
-
-
         </script>
     </head>
     <body>
-        <div class="modal modal-lg modal-dialog-centered" id="sheetModal" tabindex="-1" role="dialog" aria-labelledby="sheetModalLabel" aria-hidden="true">
+        <div class="modal modal-lg modal-dialog-centered"
+             id="sheetModal"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="sheetModalLabel"
+             aria-hidden="true">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="sheetModalLabel"></h5>
@@ -256,50 +263,50 @@
 
 
             $(document).ready(function() {
-                        // fetch the file
-                                var geometry = {{ geometry | tojson }};
-                                var directions = {{ directions | tojson }};
+                // fetch the file
+                var geometry = {{ geometry | tojson }};
+                var directions = {{ directions | tojson }};
 
-                                var marker;
-                                var currentDirectionIndex = 0;
-                                var currentStepIndex = 0;
-                                const map = findLeafletMap();
-
-
-                                function showStep() {
-
-                                    var direction = directions[currentDirectionIndex];
-                                    var step = direction.steps[currentStepIndex];
-                                    const icon = mapDirectionToFontAwesome(step.instruction);
-
-                                    var markerIcon = L.divIcon({
-                                        html: `<img src="${icons[icon]}">`,
-                                        iconSize: [40, 40],
-                                        iconAnchor: [20, 20],
-                                        className: 'direction-marker',
-                                    });
-
-                                    if (step.way_points && step.way_points.length > 0) {
-                                        if (marker) {
-                                            map.removeLayer(marker);
-                                        }
-
-                                        var firstPoint = step.way_points[0]; // Get the first point
-                                        var lastPoint = step.way_points[step.way_points.length - 1]; // Get the last point
-                                        var lat_lng = geometry[firstPoint]; // Get the lat/lng of the first point
-                                        map.flyTo([lat_lng[1], lat_lng[0]], 19); // Pan the map to the first point
-
-                                        marker = L.marker([lat_lng[1], lat_lng[0]], {
-                                            icon: markerIcon,
-                                            className: 'direction-marker-icon',
-                                        }).addTo(map);
-                                    }
+                var marker;
+                var currentDirectionIndex = 0;
+                var currentStepIndex = 0;
+                const map = findLeafletMap();
 
 
+                function showStep() {
+
+                    var direction = directions[currentDirectionIndex];
+                    var step = direction.steps[currentStepIndex];
+                    const icon = mapDirectionToFontAwesome(step.instruction);
+
+                    var markerIcon = L.divIcon({
+                        html: `<img src="${icons[icon]}">`,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 20],
+                        className: 'direction-marker',
+                    });
+
+                    if (step.way_points && step.way_points.length > 0) {
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+
+                        var firstPoint = step.way_points[0]; // Get the first point
+                        var lastPoint = step.way_points[step.way_points.length - 1]; // Get the last point
+                        var lat_lng = geometry[firstPoint]; // Get the lat/lng of the first point
+                        map.flyTo([lat_lng[1], lat_lng[0]], 19); // Pan the map to the first point
+
+                        marker = L.marker([lat_lng[1], lat_lng[0]], {
+                            icon: markerIcon,
+                            className: 'direction-marker-icon',
+                        }).addTo(map);
+                    }
 
 
 
-                                    $('#directionsContainer').html(`
+
+
+                    $('#directionsContainer').html(`
     <div class="align-center route-info">
         <div class='instruction' style="">
             <img src="${icons[icon]}" style="width: 50px; height: 50px; margin-right: 10px; margin-top: auto; margin-bottom: auto;">
@@ -311,45 +318,45 @@
     </div>
 `);
 
-                                }
+                }
 
 
-                                function nextStep() {
-                                    var direction = directions[currentDirectionIndex];
-                                    if (currentStepIndex < direction.steps.length - 1) {
-                                        currentStepIndex++;
-                                        showStep();
-                                    } else if (currentDirectionIndex < directions.length - 1) {
-                                        currentDirectionIndex++;
-                                        currentStepIndex = 0;
-                                        showStep();
-                                    }
-                                }
+                function nextStep() {
+                    var direction = directions[currentDirectionIndex];
+                    if (currentStepIndex < direction.steps.length - 1) {
+                        currentStepIndex++;
+                        showStep();
+                    } else if (currentDirectionIndex < directions.length - 1) {
+                        currentDirectionIndex++;
+                        currentStepIndex = 0;
+                        showStep();
+                    }
+                }
 
-                                function prevStep() {
-                                    if (currentStepIndex > 0) {
-                                        currentStepIndex--;
-                                        showStep();
-                                    } else if (currentDirectionIndex > 0) {
-                                        currentDirectionIndex--;
-                                        currentStepIndex = directions[currentDirectionIndex].steps.length - 1;
-                                        showStep();
-                                    }
-                                }
+                function prevStep() {
+                    if (currentStepIndex > 0) {
+                        currentStepIndex--;
+                        showStep();
+                    } else if (currentDirectionIndex > 0) {
+                        currentDirectionIndex--;
+                        currentStepIndex = directions[currentDirectionIndex].steps.length - 1;
+                        showStep();
+                    }
+                }
 
-                                $('.next-step').click(nextStep);
-                                $('.prev-step').click(prevStep);
+                $('.next-step').click(nextStep);
+                $('.prev-step').click(prevStep);
 
-                                // Initially show the first step of the first direction
-                                showStep();
-                            });
+                // Initially show the first step of the first direction
+                showStep();
+            });
 
 
-                            // update the css of the "car" class to be the correct direction
-                            var car = document.querySelector('.car');
-                            if (car) {
-                                car.style.transform = `rotate(${Math.atan(slope) * 180 / Math.PI}deg)`;
-                            }
+            // update the css of the "car" class to be the correct direction
+            var car = document.querySelector('.car');
+            if (car) {
+                car.style.transform = `rotate(${Math.atan(slope) * 180 / Math.PI}deg)`;
+            }
         </script>
     </body>
 </html>

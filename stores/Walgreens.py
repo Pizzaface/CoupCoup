@@ -25,10 +25,6 @@ class Walgreens(Store):
 
         self.store_code = self.store_config.get('store_code')
 
-    async def __aenter__(self):
-        self.reset_worksheet()
-        return self
-
     async def handle_flyers(self):
         await self.grab_collection_ids()
         await self.grab_sub_collections()
@@ -67,7 +63,7 @@ class Walgreens(Store):
 
         async with httpx.AsyncClient(timeout=90) as client:
             response = await client.post(
-                url, headers=headers, json=json_data, timeout=90
+                url, headers=headers, json=json_data
             )
 
             if response.status_code != 200:
@@ -77,16 +73,16 @@ class Walgreens(Store):
 
             data = response.json()
 
-            if not data.get('pages'):
-                raise Exception('No pages found in response')
+        if not data.get('pages'):
+            raise Exception('No pages found in response')
 
-            self.start_date = dateutil.parser.parse(data['startDate'])
-            self.end_date = dateutil.parser.parse(data['endDate'])
+        self.start_date = dateutil.parser.parse(data['startDate'])
+        self.end_date = dateutil.parser.parse(data['endDate'])
 
-            for page in data['pages']:
-                if page['isActive'] and not page['isHidden']:
-                    self.collection_ids.append(page['collectionId'])
-                    self.page_ids.append(page['circularPageId'])
+        for page in data['pages']:
+            if page['isActive'] and not page['isHidden']:
+                self.collection_ids.append(page['collectionId'])
+                self.page_ids.append(page['circularPageId'])
 
     async def grab_sub_collections(self):
 

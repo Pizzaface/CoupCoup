@@ -1,3 +1,4 @@
+import re
 import time
 import uuid
 
@@ -52,7 +53,8 @@ class FoodCityCoupons(CouponBaseStore):
 
                 for coupon_container in coupon_containers:
                     raw_text = coupon_container.text
-
+                    raw_text = re.sub(r'UPCs:\s+(.*?)\n*', '', raw_text)
+                    raw_text = raw_text.strip()
                     coupon = {'raw_text': raw_text}
 
                     if coupon_container.find('.exp-date'):

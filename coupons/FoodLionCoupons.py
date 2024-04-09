@@ -18,11 +18,7 @@ class FoodLionCoupons(CouponBaseStore):
 
     async def scrape(self):
         cookies = {
-            'optimizelyEndUserId': 'oeu1711679203155r0.7757359292261279',
-            'cf_clearance': 'Ya2l5tovAfDLBShAocrY9x6GTO6LUDQfoGCxs.AILhQ-1712007576-1.0.1.1-lnQYtFUwfsjmGhlvPzWPd4wh7sSI08cuOcK55JIhprf3iYLsTstTF5D_nGuKR76tEVmyH1N.YKRifS5rP649mA',
-            'OptanonConsent': 'isGpcEnabled=0&datestamp=Mon+Apr+01+2024+17%3A39%3A45+GMT-0400+(Eastern+Daylight+Time)&version=202209.2.0&isIABGlobal=false&hosts=&landingPath=NotLandingPage&groups=SPD_BG%3A0%2CC0004%3A0%2CC0005%3A0&AwaitingReconsent=false',
-            'datadome': 'aTkMdtE6GZVeJPSK1ZtlOA8SxdM4dU0S~EVKeimNkbfSjVEsc4fm1Bz5C8X2qed8PmzxepHeH8mNk4aj2UY~zTCz09asAQ3Q7hazCIRqdyleWBoOJH6QE2485FlbJ5gC',
-            '_dd_s': 'rum=1&id=2e9cc7bb-5eff-4d1b-b32a-a9bab5215a16&created=1712007577561&expire=1712008844653',
+
         }
 
         headers = {
@@ -53,6 +49,10 @@ class FoodLionCoupons(CouponBaseStore):
                 cookies=cookies,
                 timeout=90,
             )
+
+            if response.status_code != 200:
+                self.logger.error(f'Failed to fetch coupons: {response.status_code}')
+                return
 
             response_json = response.json()
 

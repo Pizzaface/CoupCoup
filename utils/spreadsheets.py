@@ -4,7 +4,7 @@ from openpyxl.styles import PatternFill, Font
 from utils.random_utils import random_hex_color_code
 
 
-def _write_rows_with_colors(rows, sheet):
+def write_grouped_rows_with_colors(rows, sheet):
     rows_to_colors = {}
     for r_idx, row in enumerate(rows, 1):
         if r_idx == 1:

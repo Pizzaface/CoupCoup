@@ -42,36 +42,36 @@ class FredMeyerCoupons(CouponBaseStore):
 
             coupons = response.json()['data'].get('coupons', [])
 
-            if not coupons:
-                self.logger.error('No coupons found')
-                return
+        if not coupons:
+            self.logger.error('No coupons found')
+            return
 
-            self.logger.info(f'Found {len(coupons)} coupons')
+        self.logger.info(f'Found {len(coupons)} coupons')
 
-            for coupon in coupons.values():
-                try:
-                    coupon['expirationDate'] = parse(
-                        coupon['expirationDate']
-                    ).isoformat()
-                except Exception as e:
-                    pass
+        for coupon in coupons.values():
+            try:
+                coupon['expirationDate'] = parse(
+                    coupon['expirationDate']
+                ).isoformat()
+            except Exception as e:
+                pass
 
-                parsed_coupon = {
-                    'raw_text': coupon.get('title', '')
-                    + ' '
-                    + coupon['shortDescription']
-                    + ' '
-                    + coupon.get('requirementDescription', ''),
-                    'brand_name': coupon['brandName'],
-                    'expiration_date': coupon['expirationDate'],
-                    'required_purchase_quantity': int(
-                        coupon.get('requiredQuantity', {}).get('quantity', 0)
-                    ),
-                    'deal_type': 'COUPON'
-                    if coupon['longDescription'] != ''
-                    else 'MANUFACTURER_COUPON',
-                }
+            parsed_coupon = {
+                'raw_text': coupon.get('title', '')
+                + ' '
+                + coupon['shortDescription']
+                + ' '
+                + coupon.get('requirementDescription', ''),
+                'brand_name': coupon['brandName'],
+                'expiration_date': coupon['expirationDate'],
+                'required_purchase_quantity': int(
+                    coupon.get('requiredQuantity', {}).get('quantity', 0)
+                ),
+                'deal_type': 'COUPON'
+                if coupon['longDescription'] != ''
+                else 'MANUFACTURER_COUPON',
+            }
 
-                self.processing_queue.append(parsed_coupon)
+            self.processing_queue.append(parsed_coupon)
 
         await self.process_queue()

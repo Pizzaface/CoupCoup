@@ -48,32 +48,32 @@ class ShopRiteCoupons(CouponBaseStore):
 
             coupons = response.json()
 
-            if not coupons:
-                self.logger.error('No coupons found')
-                return
+        if not coupons:
+            self.logger.error('No coupons found')
+            return
 
-            self.logger.info(f'Found {len(coupons)} coupons')
+        self.logger.info(f'Found {len(coupons)} coupons')
 
-            for coupon in coupons:
-                try:
-                    coupon['expiration_date'] = parse(
-                        coupon['expiration_date']
-                    ).isoformat()
-                except Exception as e:
-                    pass
+        for coupon in coupons:
+            try:
+                coupon['expiration_date'] = parse(
+                    coupon['expiration_date']
+                ).isoformat()
+            except Exception as e:
+                pass
 
-                parsed_coupon = {
-                    'raw_text': coupon.get('title', '')
-                    + ' '
-                    + coupon['short_description']
-                    + ' '
-                    + coupon.get('requirement_description', ''),
-                    'brand_name': coupon['brand_name'],
-                    'expiration_date': coupon['expiration_date'],
-                    'deal_type': 'COUPON',
-                }
+            parsed_coupon = {
+                'raw_text': coupon.get('title', '')
+                + ' '
+                + coupon['short_description']
+                + ' '
+                + coupon.get('requirement_description', ''),
+                'brand_name': coupon['brand_name'],
+                'expiration_date': coupon['expiration_date'],
+                'deal_type': 'COUPON',
+            }
 
-                self.processing_queue.append(parsed_coupon)
+            self.processing_queue.append(parsed_coupon)
 
         await self.process_queue()
 

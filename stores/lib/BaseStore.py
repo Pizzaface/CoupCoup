@@ -59,7 +59,7 @@ class Store(BaseModel):
             self.store_config = config[store_name]
 
     async def __aenter__(self):
-        self.pbar = tqdm_asyncio([], desc=self._store_name, leave=False)
+        self.pbar = tqdm_asyncio([], desc=self._store_name)
         self.pbar.disable = False
         return self
 
@@ -220,7 +220,8 @@ class Store(BaseModel):
             self.logger.info('No items to process')
             return
 
-        self.reset_worksheet()
+        if not is_reprocess:
+            self.reset_worksheet()
 
         self.logger.info(f'Processing {len(self.processing_queue)} items')
         # Process the queue asynchronously and write to the Excel sheet
@@ -268,6 +269,7 @@ class Store(BaseModel):
                     reprocess_queue.extend(user_input)
                     continue
 
+                rows_to_add = []
                 for i, product in enumerate(products):
                     if all(
                         [
@@ -286,7 +288,6 @@ class Store(BaseModel):
                     if '|' in (product.get('brand_name') or ''):
                         brand_names = product['brand_name'].split('|')
 
-                    rows_to_add = []
                     if brand_names:
                         for brand_name in brand_names:
                             product['brand_name'] = brand_name.strip()
@@ -298,14 +299,21 @@ class Store(BaseModel):
                         self.logger.debug(
                             f'Adding product to Excel: {product["brand_name"]} {product["product_name"]}'
                         )
-                        for row in rows_to_add:
-                            self.add_row_to_store_worksheet(row)
+                        if len(rows_to_add) >= 30:
+                            for row in rows_to_add:
+                                self.add_row_to_store_worksheet(row)
+
+                            rows_to_add = []
+
                     except Exception as e:
                         self.logger.error(f'Error writing to Excel: {e}')
                         self.logger.error(
                             f'Adding product to reprocess queue: {product}'
                         )
                         reprocess_queue.extend(user_input)
+
+                for row in rows_to_add:
+                    self.add_row_to_store_worksheet(row)
 
         if reprocess_queue and not is_reprocess:
             self.processing_queue = reprocess_queue

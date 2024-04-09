@@ -56,7 +56,7 @@ class MeijerCoupons(CouponBaseStore):
             'dnt': '1',
             'origin': 'https://www.meijer.com',
             'pragma': 'no-cache',
-            'referer': 'https://www.meijer.com/shopping/coupons.html?icid=Eyebrow%3ACoupons',
+            'referer': 'https://www.meijer.com/shopping/coupons.html',
             'sec-ch-ua': '"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"',

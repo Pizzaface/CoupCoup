@@ -27,7 +27,7 @@ from tqdm.asyncio import tqdm
 from lib.constants import GLOBAL_COUPON_PROVIDERS
 from stores.lib import BaseStore
 from utils.jinja import get_template_with_args
-from utils.spreadsheets import _write_rows_with_colors, clean_workbook
+from utils.spreadsheets import write_grouped_rows_with_colors, clean_workbook
 import coupons
 import stores
 import openai
@@ -51,9 +51,10 @@ Worksheet.to_list = lambda ws: list(ws.iter_rows(values_only=True))
 async def main():
     Path('output/stores').mkdir(exist_ok=True, parents=True)
     section = _setup_config()
-    
+
     await _handle_stores(section)
     await _handle_coupons(section)
+
     await _compare_products()
     await determine_store_paths()
 
@@ -76,7 +77,12 @@ async def _compare_products():
             )
         )
 
-    await asyncio.gather(*tasks)
+    results = await asyncio.gather(*tasks)
+
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            logger.error(f'Error comparing products: {result}')
+            continue
 
     clean_workbook(wb)
 
@@ -148,7 +154,7 @@ async def run_matchups_for_store(
     sheet = wb.create_sheet(f'{sheet_name}-matchups', 0)
     rows = dataframe_to_rows(matches, index=False, header=True)
 
-    _write_rows_with_colors(rows, sheet)
+    write_grouped_rows_with_colors(rows, sheet)
 
 
 def _get_sales_and_coupons(
@@ -213,7 +219,6 @@ async def determine_store_paths():
     begin_long, begin_lat = geocode_zip(**directions_config)
     api_key = directions_config['openrouteservice_api_key']
 
-    included_stores = ["Walgreens", "Ingles"]
     locations_by_store = get_locations_by_store(
         api_key=api_key,
         begin_lat=begin_lat,
@@ -348,10 +353,10 @@ async def _handle_coupons(section: configparser.SectionProxy):
         coupon_objs = [
             coupon
             for coupon_name, coupon in coupon_objs
-            if coupon_name in included_coupons
+            if coupon_name in included_coupons or coupon_name in GLOBAL_COUPON_PROVIDERS or coupon_name.removesuffix('Coupons') in included_coupons
         ]
 
-        await aiometer.run_on_each(async_fn=_handle_coupon_site, args=coupon_objs, max_at_once=3)
+        await aiometer.run_on_each(async_fn=_handle_coupon_site, args=coupon_objs, max_at_once=2)
 
     else:
         logger.info(
@@ -400,7 +405,7 @@ async def _handle_stores(section):
         if store_name in included_stores
     ]
 
-    await aiometer.run_on_each(async_fn=_run_store, args=store_objs, max_at_once=3)
+    await aiometer.run_on_each(async_fn=_run_store, args=store_objs, max_at_once=2)
 
     print('Finished scraping stores')
 
