@@ -52,10 +52,10 @@ async def main():
     Path('output/stores').mkdir(exist_ok=True, parents=True)
     section = _setup_config()
 
-    await _handle_stores(section)
-    await _handle_coupons(section)
+    # await _handle_stores(section)
+    # await _handle_coupons(section)
 
-    await _compare_products()
+    # await _compare_products()
     await determine_store_paths()
 
 
@@ -68,7 +68,7 @@ async def _compare_products():
     tasks = []
     # get the sales
     for sheet_name in sheet_names:
-        if sheet_name.endswith(GLOBAL_COUPON_PROVIDERS):
+        if sheet_name.endswith((*GLOBAL_COUPON_PROVIDERS, '-coupons', '-matchups')):
             continue
 
         tasks.append(
@@ -265,7 +265,7 @@ async def create_shopping_route(
             store_colors[store_name] = random.choice(POSSIBLE_STORE_COLORS)
 
         for i, loc in enumerate(locs):
-            html_text = f"""<a href='#' onclick="loadSheet('{store_name}')" data-toggle="modal" data-target="#sheetModal">{store_name}</span>"""
+            html_text = f"""<a href='#' onclick="loadSheet('output/stores/{store_name}.csv')" data-toggle="modal" data-target="#sheetModal">{store_name}</span>"""
 
             tooltip = folium.map.Popup(html=html_text, max_width=2650)
 

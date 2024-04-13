@@ -10,21 +10,8 @@
         <link rel="stylesheet"
               href="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.css">
         <style>
-            #xspreadsheet {
-                width: 100%;
-                height: 100%;
-            }
-            #sheetModal {
-                z-index: 1500;
-                max-width: 75vw;
-                height: 75vh;
+            .modal {
                 margin: auto;
-                border-radius: 5px;
-            }
-            .modal-content {
-                width: 100%;
-                height: 100%;
-                overflow: scroll;
             }
         .route-info {
             display: flex;
@@ -69,10 +56,6 @@
             margin-left: 5px;
             display: block;
         }
-        #xspreadsheet {
-            width: 100%;
-            height: 100%;
-        }
         .direction-overlay {
             position: fixed;
             bottom: 0;
@@ -88,76 +71,120 @@
             text-align: center;
             margin-top: 10px;
         }
+        .modal-content {
+            background-color: rgba(255, 255, 255, 1);
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        .coupon-card small {
+            text-align: justify;
+        }
+        .coupon-card {
+            background-color: #f9f9f9;
+            border: dashed 2px #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-family: Arial, sans-serif;
+          }
+        .modal-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            background-color: #f9f9f9;
+            z-index: 1000;
+        }
+        .modal-header .close {
+            margin: 0;
+        }
+          .coupon-header {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+            display: flex;
+              position: relative;
+              text-align: center;
+            justify-content: center;
+            align-items: center;
+              flex-direction: row;
+          }
+          .coupon-info {
+            font-size: 14px;
+            color: #666;
+          }
+          .coupon-deal, .coupon-validity, .coupon-requirements {
+            font-weight: bold;
+          }
+          .coupon-deal span, .coupon-validity span, .coupon-requirements span {
+            float: right;
+            font-weight: normal;
+          }
+          .clear-both {
+            clear: both;
+          }
         </style>
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.js"></script>
-        <script src="https://cdn.sheetjs.com/xspreadsheet/xlsxspread.min.js"></script>
-        <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+        <script src="resources/papaparse.min.js"></script>
         <script>
-            const file = 'output\\stores.xlsx';
-            window.grid = new x_spreadsheet('#xspreadsheet', {
-                mode: 'read',
-                showToolbar: false,
-                showContextmenu: false,
-                utc: false,
-                cellStyles: true,
-            });
+            function loadSheet(filename) {
+                $('#sheetModalLabel').text(filename.split('/').pop().split('.')[0])
+                $('#contents').empty();
+                fetch(filename)
+                    .then(response => response.blob())
+                    .then(text => {
 
-            function autoFitColumns(worksheet) {
-                const objectMaxLength = [];
+                         // Read the file as text
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            var contents = e.target.result;// Parse local CSV file
+                            Papa.parse(contents, {
+                                header: true,
+                                dynamicTyping: true,
+                                complete: function(results) {
 
-                console.log(worksheet);
-                const lastRow = worksheet['!ref'].split(':')[1].replace(/\D/g, '');
+                        for (result of results.data) {
+                            let header = result?.brand_name !== 'N/A' ? result?.brand_name : result?.product_name;
+                            header = header ? header.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : 'Product Offer';
+                            let product = (result?.brand_name !== 'N/A' && result?.product_name) ? result?.product_name : '';
+                            let description = result?.description ? `<div class="coupon-info">Description: ${result?.description}</div>` : '';
+                            let variety = result?.product_variety ? `<div class="coupon-info">Variety: ${result?.product_variety}</div>` : '';
+                            let price = result?.price ? `<div class="coupon-deal">Price: <span>$${result?.price}</span></div>` : '';
+                            let validFromTo = `<div class="coupon-validity">Valid: <span>${result?.valid_from} to ${result?.valid_to}</span></div>`;
+                            let requiresCard = result?.requires_store_card === 1 ? '<div class="coupon-requirements">Requires Store Card</div>' : '';
 
-                for (const column of _buildColumnsArray(worksheet)) {
-                    let maxCellLength = 0;
-
-                    for (let row = 1; row <= lastRow + 1; row++) {
-                        const cell = worksheet[`${column}${row}`];
-
-                        if (cell != null) {
-                            const cellLength = Math.ceil(cell.v.length * 1.1); // adjust column width multiplier
-                            if (cellLength > maxCellLength) maxCellLength = cellLength;
-                        }
-                    }
-
-                    objectMaxLength.push({
-                        width: maxCellLength
-                    });
-                }
-            }
-
-            function loadSheet(sheetName) {
-                fetch(file)
-                    .then(response => response.arrayBuffer())
-                    .then(buffer => {
-                        const data = new Uint8Array(buffer);
-
-
-
-                        const workbook = XLSX.read(data, {
-                            type: 'array',
-                            sheets: [sheetName]
-                        });
-                        const json = stox(workbook);
-                        window.grid.loadData(json);
-                        $('#sheetModalLabel').text(sheetName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '));
-
-                        const newBook = xtos(window.grid.getData());
-                        const jsonSheet = XLSX.utils.json_to_sheet(json);
-                        /* create column metadata object if it does not exist */
-                        const columnCount = Object.values(json[0].rows[0]['cells']).length;
-                        for (const col in jsonSheet['!cols']) {
-                            debugger;
-                            if (jsonSheet['!cols'][col] == null) {
-                                jsonSheet['!cols'][col] = {
-                                    width: 10
-                                };
+                            if (header === 'None') {
+                                header = product;
                             }
+
+                            var row = `
+                                <div class="coupon-card">
+                                    <div class="coupon-header">${header}</div>
+                                    ${header === product || product.length < 1 ? '' : `<small>${product}</small>`}
+                                    <br />
+                                    ${description}
+                                    ${variety}
+                                    ${price}
+                                    ${validFromTo}
+                                    ${requiresCard}
+                                    <div class="clear-both"></div>
+                                </div>
+                            `;
+                            $('#contents').append(row);
+                        }
                         }
                     });
+                };
+                reader.readAsText(text);
+            });
 
 
             }
@@ -172,13 +199,31 @@
              aria-hidden="true">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="sheetModalLabel"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="fa fa-times"></i></span>
-                    </button>
+                    <div class="row my-1">
+                        <div class="col-6 text-left">
+                            <h5 id="sheetModalLabel"></h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row my-1">
+                        <input type="text" id="search" placeholder="Search for a product..." class="form-control">
+                        <div class="row mt-1 mx-auto">
+                            <div class="col-6 text-right">
+                                <button id="searchButton" class="btn btn-primary">Search</button>
+                            </div>
+                            <div class="col-6 text-left">
+                                <button id="clearSearch" class="btn btn-secondary">Clear</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-body">
-                    <div id="xspreadsheet"></div>
+
+                    <div id="contents"></div>
                 </div>
             </div>
         </div>
@@ -195,9 +240,26 @@
         <script>
             window.addEventListener('DOMContentLoaded', (event) => {
                 console.log('DOM fully loaded and parsed');
-                window.grid = new x_spreadsheet('#xspreadsheet', {
-                    mode: 'read',
-                    showContextmenu: false,
+
+                $('#searchButton').click(function() {
+                    var search = $('#search').val();
+                    var cards = $('.coupon-card');
+                    cards.each(function(index, card) {
+                        var header = $(card).find('.coupon-header').text();
+                        if (header.toLowerCase().includes(search.toLowerCase())) {
+                            $(card).show();
+                        } else {
+                            $(card).hide();
+                        }
+                    });
+                });
+
+                $('#clearSearch').click(function() {
+                    $('#search').val('');
+                    var cards = $('.coupon-card');
+                    cards.each(function(index, card) {
+                        $(card).show();
+                    });
                 });
             });
 

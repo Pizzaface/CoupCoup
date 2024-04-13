@@ -1,0 +1,71 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    #xspreadsheet {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+</head>
+
+<body>
+<div id="sheetLinks"></div>
+<a href="#" data-toggle="modal" data-target="#spreadsheetModal">Open Spreadsheet</a>
+
+<script src="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xspreadsheet/xlsxspread.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+<script>
+
+   const grid = x_spreadsheet('#xspreadsheet');
+   // fetch the file
+   const file = 'output\\stores-1.xlsx';
+    fetch(file)
+     .then(r => r.blob())
+     .then(blob => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, {type: 'array'});
+    const new_data = stox(workbook);
+
+    // Create a link for each sheet
+    const sheetNames = workbook.SheetNames;
+    const sheetLinksContainer = document.getElementById('sheetLinks');
+    sheetLinksContainer.innerHTML = ''; // Clear any existing links
+    sheetNames.forEach((sheetName, index) => {
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = sheetName ;
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            // Load the clicked sheet into the spreadsheet viewer
+            grid.loadData([new_data[index]]);
+        });
+        sheetLinksContainer.appendChild(link);
+        sheetLinksContainer.appendChild(document.createElement('br'))
+    });
+
+    // Load the first sheet into the spreadsheet viewer
+    grid.loadData([new_data[0]]);
+}
+reader.readAsArrayBuffer(blob);
+});
+
+</script>
+</body>
+</html>
