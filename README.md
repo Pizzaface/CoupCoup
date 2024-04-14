@@ -8,7 +8,7 @@ CoupCoup
   
 An automated money ~~making~~ saving machine, powered by AI
   
-</p>
+</span>
 
 <hr />
 <h2 align="center">
