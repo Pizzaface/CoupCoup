@@ -2,10 +2,11 @@
 
 ![Logo](./resources/logo.png)
 
-CoupCoup</h1>
-<p align="center">
+CoupCoup
+</h1>
+<span align="center">
   
-  An automated money ~~making~~ saving machine, powered by AI
+An automated money ~~making~~ saving machine, powered by AI
   
 </p>
 
