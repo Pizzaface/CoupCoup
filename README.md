@@ -4,6 +4,7 @@
 
 CoupCoup</h1>
 <p align="center">
+  
   An automated money ~~making~~ saving machine, powered by AI
   
 </p>
