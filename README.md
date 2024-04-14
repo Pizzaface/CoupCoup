@@ -127,3 +127,8 @@ To run CoupCoup, you can use the following command:
 ```bash
 poetry run python __main__.py
 ```
+
+This will run the base script - running through your INCLUDED_STORES and COUPON_SOURCES, and generating a route based on the locality information you provided.
+
+### Output
+

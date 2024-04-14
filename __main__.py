@@ -1,3 +1,4 @@
+import shutil
 import asyncio
 import configparser
 import inspect
@@ -17,7 +18,6 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 from openrouteservice import directions
-import sys
 
 from loguru import logger
 from pandas import DataFrame
@@ -33,13 +33,13 @@ import stores
 import openai
 import folium
 
+from datetime import datetime
 from stores.lib.constants import HEADERS, POSSIBLE_STORE_COLORS
 from utils.config import get_config
 from utils.geocoding import geocode_zip, get_store_locations
 from utils.matching import match_multiple_columns
 
 from bs4 import BeautifulSoup
-
 logger.remove()
 
 # Log all errors, warnings, and info to the console
@@ -52,10 +52,10 @@ async def main():
     Path('output/stores').mkdir(exist_ok=True, parents=True)
     section = _setup_config()
 
-    # await _handle_stores(section)
-    # await _handle_coupons(section)
+    await _handle_stores(section)
+    await _handle_coupons(section)
 
-    # await _compare_products()
+    await _compare_products()
     await determine_store_paths()
 
 
@@ -94,6 +94,11 @@ async def _compare_products():
 
 
 def _split_sheets_by_store(wb: Workbook):
+    if Path('output/stores').exists():
+        shutil.rmtree('output/stores')
+
+    Path('output/stores').mkdir(exist_ok=True, parents=True)
+
     # split the stores into separate files
     sheet_names = wb.sheetnames
     for sheet_name in sheet_names:
@@ -265,7 +270,7 @@ async def create_shopping_route(
             store_colors[store_name] = random.choice(POSSIBLE_STORE_COLORS)
 
         for i, loc in enumerate(locs):
-            html_text = f"""<a href='#' onclick="loadSheet('output/stores/{store_name}.csv')" data-toggle="modal" data-target="#sheetModal">{store_name}</span>"""
+            html_text = f"""<a href='#' onclick="loadSheet('stores/{store_name.lower()}.csv')" data-toggle="modal" data-target="#sheetModal">{store_name}</span>"""
 
             tooltip = folium.map.Popup(html=html_text, max_width=2650)
 
@@ -298,8 +303,16 @@ async def create_shopping_route(
     bs = BeautifulSoup(html, 'html.parser')
     pretty_html = bs.prettify()
 
-    with open('directions.html', 'w') as f:
+    output_path = Path(f'{Path.cwd()}/output/{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}')
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    with open(output_path / 'directions.html', 'w+') as f:
         f.write(pretty_html)
+
+    # Copy `resources` folder to output
+    shutil.copytree('resources', output_path / 'resources', dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.pyc', '__pycache__'))
+    shutil.copy('output/stores.xlsx', output_path / 'stores.xlsx')
+    shutil.copytree('output/stores', output_path / 'stores', dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.pyc', '__pycache__'))
 
     logger.info('Map and directions saved to directions.html')
 
@@ -312,9 +325,6 @@ def get_locations_by_store(
 ):
     locations_by_store = defaultdict(list)
     for store_name in included_stores:
-        if store_name.lower() == 'heb':
-            store_name = 'H-E-B'
-
         # search for local locations of store
         locations = get_store_locations(
             api_key, store_name, begin_lat, begin_long

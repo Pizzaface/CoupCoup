@@ -153,12 +153,11 @@ class Flipp(Store, ABC):
                 tasks.append(self.handle_product(product))
 
         # Use more_itertools.chunked to split tasks into batches (e.g., of size 10)
-        async for batch in chunked(tasks, 3):
-            results = await asyncio.gather(*batch)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            for result in results:
-                if isinstance(result, Exception):
-                    self.logger.warning(f'Error handling product: {result}')
+        for result in results:
+            if isinstance(result, Exception):
+                self.logger.warning(f'Error handling product: {result}')
 
         try:
             await self.process_queue()

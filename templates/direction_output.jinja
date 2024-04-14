@@ -1,14 +1,11 @@
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Directions Display</title>
+        <link rel="icon" type="image/x-icon" href="./resources/favicon.ico">
+        <title>CoupCoup</title>
         <!-- Include Bootstrap CSS -->
-        <link rel="stylesheet"
-              href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet"
-              href="https://unpkg.com/x-data-spreadsheet@1.1.5/dist/xspreadsheet.css">
+        <link rel="stylesheet" href="./resources/bootstrap.css">
         <style>
             .modal {
                 margin: auto;
@@ -130,13 +127,13 @@
             clear: both;
           }
         </style>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="resources/jquery.js"></script>
+        <script src="resources/popper.js"></script>
+        <script src="resources/bootstrap.js"></script>
         <script src="resources/papaparse.min.js"></script>
         <script>
             function loadSheet(filename) {
-                $('#sheetModalLabel').text(filename.split('/').pop().split('.')[0])
+                $('#sheetModalLabel').text(filename.split('/').pop().split('.')[0]);
                 $('#contents').empty();
                 fetch(filename)
                     .then(response => response.blob())
@@ -412,13 +409,6 @@
                 // Initially show the first step of the first direction
                 showStep();
             });
-
-
-            // update the css of the "car" class to be the correct direction
-            var car = document.querySelector('.car');
-            if (car) {
-                car.style.transform = `rotate(${Math.atan(slope) * 180 / Math.PI}deg)`;
-            }
         </script>
     </body>
 </html>
