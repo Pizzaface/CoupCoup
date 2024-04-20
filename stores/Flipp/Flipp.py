@@ -6,7 +6,6 @@ from typing import AsyncGenerator, Any
 import httpx as httpx
 from abc import ABC
 
-from aioitertools.more_itertools import chunked
 from dateutil.parser import parse
 from stores.lib.BaseStore import Store
 from stores.lib.constants import WEEKLY_AD_NAMES

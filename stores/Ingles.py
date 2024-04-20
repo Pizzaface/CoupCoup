@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 from loguru import logger
-from pyppeteer import launch
-from pyppeteer.browser import Browser
-from pyppeteer.page import Page
-
 import asyncio
 
 from stores.lib.BrowserStore import BrowserStore

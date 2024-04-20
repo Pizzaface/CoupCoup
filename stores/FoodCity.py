@@ -1,16 +1,9 @@
 from __future__ import annotations
 
-from pyppeteer import launch
 import asyncio
-
-from pyppeteer.browser import Browser
-from pyppeteer.page import Page
-
-from stores.lib.BaseStore import Store
 import unicodedata
 
 from stores.lib.BrowserStore import BrowserStore
-from utils.config import get_config
 
 PUBLIX_AD_URL = 'https://accessibleweeklyad.publix.com/'
 

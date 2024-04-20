@@ -1,0 +1,122 @@
+.modal {
+    margin: auto;
+}
+.route-info {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+#directionsContainer {
+    padding: 10px;
+    background-color: rgba(100, 155, 100, 1);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.direction-marker {
+    background-color: rgba(100, 155, 100, 1);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.direction-marker-icon {
+    background-color: white;
+}
+.instruction {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-direction: row;
+    text-align: center;
+    font-size: 2rem;
+}
+@media (max-width: 768px) {
+    .instruction {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+}
+.instruction b {
+    font-size: 2.5rem;
+    margin-left: 5px;
+    display: block;
+}
+.direction-overlay {
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    color: white;
+    background-color: rgba(100, 155, 100, 1);
+    padding: 10px;
+    z-index: 1000; /* Ensure it's above the map */
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.direction-navigation {
+    text-align: center;
+    margin-top: 10px;
+}
+.modal-content {
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 10px;
+}
+.coupon-card small {
+    text-align: justify;
+}
+.coupon-card {
+    background-color: #f9f9f9;
+    border: dashed 2px #ccc;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-family: Arial, sans-serif;
+  }
+.modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    background-color: #f9f9f9;
+    z-index: 1000;
+}
+.modal-header .close {
+    margin: 0;
+}
+  .coupon-header {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 5px;
+    display: flex;
+      position: relative;
+      text-align: center;
+    justify-content: center;
+    align-items: center;
+      flex-direction: row;
+  }
+  .coupon-info {
+    font-size: 14px;
+    color: #666;
+  }
+  .coupon-deal, .coupon-validity, .coupon-requirements {
+    font-weight: bold;
+  }
+  .coupon-deal span, .coupon-validity span, .coupon-requirements span {
+    float: right;
+    font-weight: normal;
+  }
+  .clear-both {
+    clear: both;
+  }

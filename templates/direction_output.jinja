@@ -132,6 +132,16 @@
         <script src="resources/bootstrap.js"></script>
         <script src="resources/papaparse.min.js"></script>
         <script>
+
+            function loadStoreSheetAndMatchupSheet(storeSheet, matchupSheet) {
+                 try {
+                    loadSheet(storeSheet)
+                    loadSheet(matchupSheet);
+                } catch (e) {
+                    $('#contents').html('<div class="alert alert-danger">Error loading sheet: ' + e.message + '</div>');
+                }
+            }
+
             function loadSheet(filename) {
                 $('#sheetModalLabel').text(filename.split('/').pop().split('.')[0]);
                 $('#contents').empty();

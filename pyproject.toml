@@ -13,7 +13,6 @@ jinja2 = "*"
 asyncstdlib = "*"
 beautifulsoup4 = "*"
 thefuzz = "*"
-openai = "*"
 tdqm = "*"
 pyppeteer = "^1.0.2"
 more-itertools = "^10.1.0"
@@ -29,6 +28,7 @@ celery = {extras = ["redis"], version = "^5.3.6"}
 openpyxl = "^3.1.2"
 orjson = "^3.10.0"
 aiometer = "^0.5.0"
+offline-folium = {path = "./custom_packages/offline-folium", develop = true}
 
 
 [build-system]

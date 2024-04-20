@@ -16,6 +16,8 @@ from .GiantFood import GiantFood
 from .ShopRite import ShopRite
 from .JewelOsco import JewelOsco
 from .FredMeyer import FredMeyer
+from .Sprouts import Sprouts
+from .StopAndShop import StopAndShop
 
 __all__ = [
     'CVS',
@@ -36,4 +38,6 @@ __all__ = [
     'ShopRite',
     'JewelOsco',
     'FredMeyer',
+    'Sprouts',
+    'StopAndShop'
 ]
