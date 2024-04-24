@@ -198,42 +198,6 @@
         </script>
     </head>
     <body>
-        <div class="modal modal-lg modal-dialog-centered"
-             id="sheetModal"
-             tabindex="-1"
-             role="dialog"
-             aria-labelledby="sheetModalLabel"
-             aria-hidden="true">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="row my-1">
-                        <div class="col-6 text-left">
-                            <h5 id="sheetModalLabel"></h5>
-                        </div>
-                        <div class="col-6 text-right">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true"><i class="fa fa-times"></i></span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row my-1">
-                        <input type="text" id="search" placeholder="Search for a product..." class="form-control">
-                        <div class="row mt-1 mx-auto">
-                            <div class="col-6 text-right">
-                                <button id="searchButton" class="btn btn-primary">Search</button>
-                            </div>
-                            <div class="col-6 text-left">
-                                <button id="clearSearch" class="btn btn-secondary">Clear</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-body">
-
-                    <div id="contents"></div>
-                </div>
-            </div>
-        </div>
         {% autoescape false %}
             {{ map }}
         {% endautoescape %}

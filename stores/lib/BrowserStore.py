@@ -6,6 +6,7 @@ from pyppeteer.page import Page
 
 from stores.lib.BaseStore import Store
 from tqdm.asyncio import tqdm as tqdm_asyncio
+from async_timeout import timeout
 
 
 class BrowserStore(Store):
@@ -30,20 +31,24 @@ class BrowserStore(Store):
         self._browser: Browser = await launch(
             {
                 'headless': self.headless,
+                'autoClose': True,
+                'args': ['--no-sandbox', '--disable-setuid-sandbox'],
             }
         )
         self._page = await self._browser.newPage()
 
-        self.pbar = tqdm_asyncio([], desc=self._store_name, leave=False)
+        self.pbar = tqdm_asyncio([], desc=self._store_name)
         self.pbar.disable = False
+        self.pbar.refresh()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self._browser.close()
+        self.pbar.close()
 
     async def load_page(self, is_retry: bool = False, wait_until: str = 'networkidle2'):
         try:
-            await self.page.goto(self.url, waitUntil=wait_until)
+            await self.page.goto(self.url, waitUntil=wait_until, timeout=60000)
         except Exception as e:
             self.logger.warning(f'Error loading page: {e}')
 

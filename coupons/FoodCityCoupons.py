@@ -15,8 +15,8 @@ class FoodCityCoupons(CouponBaseStore):
     store_code: str = None
     device_id: str = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         store_name = self._store_name.split('-')[0]
         config = get_config()

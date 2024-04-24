@@ -1,1 +1,1 @@
-GLOBAL_COUPON_PROVIDERS = ('matchups', 'coupons-com', 'newspaper', 'com', 'newspaper-coupons')
+GLOBAL_COUPON_PROVIDERS = ('coupons-com', 'newspaper', 'com', 'newspaper-coupons')

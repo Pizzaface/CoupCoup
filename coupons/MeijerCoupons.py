@@ -11,8 +11,8 @@ class MeijerCoupons(CouponBaseStore):
     processing_queue: list = []
     store_code: str = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.store_code = self.store_config.get('store_code')
 

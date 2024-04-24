@@ -42,9 +42,10 @@ class Store(BaseModel):
 
     processing_queue: list[dict] = []
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, cm, *args, **kwargs):
         super().__init__(**kwargs)
 
+        self.timer_cm = cm
         config = get_config()
 
         store_name = self._store_name.lower()
@@ -58,6 +59,8 @@ class Store(BaseModel):
         elif store_name in config.sections():
             self.store_config = config[store_name]
 
+        self.items_at_once = config['config'].getint('items_at_once', 5)
+
     async def __aenter__(self):
         self.pbar = tqdm_asyncio([], desc=self._store_name)
         self.pbar.disable = False
@@ -65,7 +68,6 @@ class Store(BaseModel):
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         pass
-
 
     @property
     def httpx_transport(self):
@@ -242,7 +244,8 @@ class Store(BaseModel):
         self.pbar.set_description(f'Processing {self._store_name}')
         self.pbar.refresh()
 
-        async with aiometer.amap(async_fn=extract_products_using_gemini, args=tasks, max_at_once=5) as results:
+        self.timer_cm.shift(20 * len(tasks))
+        async with aiometer.amap(async_fn=extract_products_using_gemini, args=tasks, max_at_once=self.items_at_once) as results:
             async for result_obj in results:
                 if (
                     issubclass(result_obj.__class__, Exception)
@@ -252,6 +255,7 @@ class Store(BaseModel):
                     continue
 
                 self.pbar.update(1)
+                self.timer_cm.shift(10)
                 products, user_input = result_obj
                 if isinstance(user_input, str):
                     try:
@@ -318,11 +322,14 @@ class Store(BaseModel):
         if reprocess_queue and not is_reprocess:
             self.processing_queue = reprocess_queue
             self.logger.info(f'Reprocessing {len(reprocess_queue)} items')
+            self.timer_cm.shift(20 * len(reprocess_queue))
+
             return await self.process_queue(is_reprocess=True)
         elif reprocess_queue and is_reprocess:
             self.logger.error(
                 f'Unable to process {len(reprocess_queue)} items after reprocessing. Please check logs.'
             )
+            self.timer_cm.shift(5)
             await asyncio.sleep(2)
 
         self.logger.info('Finished processing queue')

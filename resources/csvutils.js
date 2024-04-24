@@ -7,7 +7,6 @@ function loadStoreSheetAndMatchupSheet(store_name) {
 
   try {
     loadSheet('stores/' + store_name + '.csv');
-    loadSheet('stores/' + store_name + '-matchups.csv');
   } catch (e) {
     $("#contents").html(
       '<div class="alert alert-danger">Error loading sheet: ' +
@@ -15,10 +14,15 @@ function loadStoreSheetAndMatchupSheet(store_name) {
         "</div>",
     );
   }
+
+  try {
+    loadSheet('stores/' + store_name + '-matchups.csv', true);
+  } catch (e) {
+      console.log("No matchups sheet found for " + store_name + ".")
+  }
 }
 
-function loadSheet(filename) {
-
+function loadSheet(filename, isMatchup = false) {
   fetch(filename)
     .then((response) => response.blob())
     .then((text) => {
@@ -53,7 +57,7 @@ function loadSheet(filename) {
                 ? `<div class="coupon-info">Variety: ${result?.product_variety}</div>`
                 : "";
               let price = result?.price
-                ? `<div class="coupon-deal">Price: <span>$${result?.price}</span></div>`
+                ? `<div class="coupon-deal">Price/Savings: <span>$${result?.price}</span></div>`
                 : "";
               let validFromTo = `<div class="coupon-validity">Valid: <span>${result?.valid_from} to ${result?.valid_to}</span></div>`;
               let requiresCard =
@@ -67,6 +71,7 @@ function loadSheet(filename) {
 
               var row = `
                     <div class="coupon-card">
+                        ${isMatchup ? '<div class="coupon-matchup">Matchup</div>' : ''}
                         <div class="coupon-header">${header}</div>
                         ${header === product || product.length < 1 ? "" : `<small>${product}</small>`}
                         <br />

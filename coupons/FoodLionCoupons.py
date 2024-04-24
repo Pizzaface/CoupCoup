@@ -12,8 +12,8 @@ class FoodLionCoupons(CouponBaseStore):
     device_id: str = None
     base_url: str = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.base_url = f'https://foodlion.com/apis/circular-coupons/v1/FDLN/offers/anonymous'
 
     async def scrape(self):
