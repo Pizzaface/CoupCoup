@@ -387,14 +387,20 @@ async def handle_vertex_ai_generate(
             }
         )
     ]
-    gemini_response = await make_vertex_gemini_call(
-        history,
-        model_name=model_name,
-        logger=logger,
-        temperature=model_temp,
-        top_k=model_top_k,
-        top_p=model_top_p,
-    )
+
+    try:
+        gemini_response = await make_vertex_gemini_call(
+            history,
+            model_name=model_name,
+            logger=logger,
+            temperature=model_temp,
+            top_k=model_top_k,
+            top_p=model_top_p,
+        )
+    except Exception as e:
+        logger.error(e)
+        return None
+
     return gemini_response
 
 
