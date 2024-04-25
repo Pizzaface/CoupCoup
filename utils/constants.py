@@ -1,216 +1,46 @@
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" type="image/x-icon" href="./resources/favicon.ico">
-        <title>CoupCoup</title>
-        <!-- Include Bootstrap CSS -->
-        <link rel="stylesheet" href="./resources/bootstrap.css">
-        <style>
-            .modal {
-                margin: auto;
-            }
-        .route-info {
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-        }
-        #directionsContainer {
-            padding: 10px;
-            background-color: rgba(100, 155, 100, 1);
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-        .direction-marker {
-            background-color: rgba(100, 155, 100, 1);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .direction-marker-icon {
-            background-color: white;
-        }
-        .instruction {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            align-content: center;
-            flex-direction: row;
-            text-align: center;
-            font-size: 2rem;
-        }
-        @media (max-width: 768px) {
-            .instruction {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-            }
-        }
-        .instruction b {
-            font-size: 2.5rem;
-            margin-left: 5px;
-            display: block;
-        }
-        .direction-overlay {
-            position: fixed;
-            bottom: 0;
-            width: 100vw;
-            color: white;
-            background-color: rgba(100, 155, 100, 1);
-            padding: 10px;
-            z-index: 1000; /* Ensure it's above the map */
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .direction-navigation {
-            text-align: center;
-            margin-top: 10px;
-        }
-        .modal-content {
-            background-color: rgba(255, 255, 255, 1);
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 10px;
-        }
-        .coupon-card small {
-            text-align: justify;
-        }
-        .coupon-card {
-            background-color: #f9f9f9;
-            border: dashed 2px #ccc;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-family: Arial, sans-serif;
-          }
-        .modal-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            background-color: #f9f9f9;
-            z-index: 1000;
-        }
-        .modal-header .close {
-            margin: 0;
-        }
-          .coupon-header {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 5px;
-            display: flex;
-              position: relative;
-              text-align: center;
-            justify-content: center;
-            align-items: center;
-              flex-direction: row;
-          }
-          .coupon-info {
-            font-size: 14px;
-            color: #666;
-          }
-          .coupon-deal, .coupon-validity, .coupon-requirements {
-            font-weight: bold;
-          }
-          .coupon-deal span, .coupon-validity span, .coupon-requirements span {
-            float: right;
-            font-weight: normal;
-          }
-          .clear-both {
-            clear: both;
-          }
-        </style>
-        <script src="resources/jquery.js"></script>
-        <script src="resources/popper.js"></script>
-        <script src="resources/bootstrap.js"></script>
-        <script src="resources/papaparse.min.js"></script>
-        <script>
+modal_html = """<div class="modal" tabindex="-1"
+             id="sheetModal" aria-labelledby="sheetModalLabel" aria-hidden="true">  <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="my-1" style="
+                            display: flex;
+                            width: 100%;
+                            align-content: center;
+                            flex-wrap: wrap;
+                            align-items: center;
+                            justify-content: center;
+                            text-align: center;
+                        ">
+                        <div class="col-6 text-left">
+                            <h5 id="sheetModalLabel"></h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row my-1">
+                        <input type="text" id="search" placeholder="Search for a product..." class="form-control">
+                        <div class="row mt-1 mx-auto">
+                            <div class="col-6 text-center">
+                                <button id="searchButton" class="btn btn-primary">Search</button>
+                            </div>
+                            <div class="col-6 text-center">
+                                <button id="clearSearch" class="btn btn-secondary">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
 
-            function loadStoreSheetAndMatchupSheet(storeSheet, matchupSheet) {
-                 try {
-                    loadSheet(storeSheet)
-                    loadSheet(matchupSheet);
-                } catch (e) {
-                    $('#contents').html('<div class="alert alert-danger">Error loading sheet: ' + e.message + '</div>');
-                }
-            }
-
-            function loadSheet(filename) {
-                $('#contents').empty();
-                fetch(filename)
-                    .then(response => response.blob())
-                    .then(text => {
-
-                         // Read the file as text
-                        var reader = new FileReader();
-                        reader.onload = function(e) {
-                            var contents = e.target.result;// Parse local CSV file
-                            Papa.parse(contents, {
-                                header: true,
-                                dynamicTyping: true,
-                                complete: function(results) {
-
-                        for (result of results.data) {
-                            let header = result?.brand_name !== 'N/A' ? result?.brand_name : result?.product_name;
-                            header = header ? header.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : 'Product Offer';
-                            let product = (result?.brand_name !== 'N/A' && result?.product_name) ? result?.product_name : '';
-                            let description = result?.description ? `<div class="coupon-info">Description: ${result?.description}</div>` : '';
-                            let variety = result?.product_variety ? `<div class="coupon-info">Variety: ${result?.product_variety}</div>` : '';
-                            let price = result?.price ? `<div class="coupon-deal">Price: <span>$${result?.price}</span></div>` : '';
-                            let validFromTo = `<div class="coupon-validity">Valid: <span>${result?.valid_from} to ${result?.valid_to}</span></div>`;
-                            let requiresCard = result?.requires_store_card === 1 ? '<div class="coupon-requirements">Requires Store Card</div>' : '';
-
-                            if (header === 'None') {
-                                header = product;
-                            }
-
-                            var row = `
-                                <div class="coupon-card">
-                                    <div class="coupon-header">${header}</div>
-                                    ${header === product || product.length < 1 ? '' : `<small>${product}</small>`}
-                                    <br />
-                                    ${description}
-                                    ${variety}
-                                    ${price}
-                                    ${validFromTo}
-                                    ${requiresCard}
-                                    <div class="clear-both"></div>
-                                </div>
-                            `;
-                            $('#contents').append(row);
-                        }
-                        }
-                    });
-                };
-                reader.readAsText(text);
-            });
-
-
-            }
-        </script>
-    </head>
-    <body>
-        {% autoescape false %}
-            {{ map }}
-        {% endautoescape %}
-        <div class="direction-overlay">
-            <div id="directionsContainer"></div>
-            <div class="direction-navigation">
-                <button class="btn btn-secondary prev-step">Previous</button>
-                <button class="btn btn-primary next-step">Next</button>
+                    <div id="contents"></div>
+                </div>
             </div>
         </div>
-        <script>
-            window.addEventListener('DOMContentLoaded', (event) => {
-                console.log('DOM fully loaded and parsed');
+        </div>"""
 
+extra_script = """window.addEventListener('DOMContentLoaded', (event) => {
                 $('#searchButton').click(function() {
                     var search = $('#search').val();
                     var cards = $('.coupon-card');
@@ -304,7 +134,6 @@
                 var currentStepIndex = 0;
                 const map = findLeafletMap();
 
-
                 function showStep() {
 
                     var direction = directions[currentDirectionIndex];
@@ -324,6 +153,7 @@
                         }
 
                         var firstPoint = step.way_points[0]; // Get the first point
+                        var lastPoint = step.way_points[step.way_points.length - 1]; // Get the last point
                         var lat_lng = geometry[firstPoint]; // Get the lat/lng of the first point
                         map.flyTo([lat_lng[1], lat_lng[0]], 19); // Pan the map to the first point
 
@@ -333,21 +163,17 @@
                         }).addTo(map);
                     }
 
-
-
-
-
                     $('#directionsContainer').html(`
-    <div class="align-center route-info">
-        <div class='instruction' style="">
-            <img src="${icons[icon]}" style="width: 50px; height: 50px; margin-right: 10px; margin-top: auto; margin-bottom: auto;">
-            ${step.instruction}
-        </div>
-        <p style='font-size: 1rem'>Store ${currentDirectionIndex + 1}: ${direction.distance} mi (total)</p>
-        <p>Distance: ${step.distance} mi</p>
-        <p>Duration: ${secondsToHms(step.duration)}</p>
-    </div>
-`);
+                        <div class="align-center route-info">
+                            <div class='instruction' style="">
+                                <img src="${icons[icon]}" style="width: 50px; height: 50px; margin-right: 10px; margin-top: auto; margin-bottom: auto;">
+                                ${step.instruction}
+                            </div>
+                            <p style='font-size: 1rem'>Store ${currentDirectionIndex + 1}: ${direction.distance} mi (total)</p>
+                            <p>Distance: ${step.distance} mi</p>
+                            <p>Duration: ${secondsToHms(step.duration)}</p>
+                        </div>
+                    `);
 
                 }
 
@@ -380,7 +206,4 @@
 
                 // Initially show the first step of the first direction
                 showStep();
-            });
-        </script>
-    </body>
-</html>
+            });"""

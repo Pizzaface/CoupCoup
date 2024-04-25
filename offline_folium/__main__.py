@@ -2,7 +2,7 @@ from urllib.request import urlopen
 import os
 
 import folium
-from .paths import dest_path
+from offline_folium.paths import dest_path
 
 def download_all_files():
     if not os.path.exists(dest_path):

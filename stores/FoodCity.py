@@ -35,6 +35,7 @@ class FoodCity(BrowserStore):
         current_page = 1
 
         while current_page <= await self._get_total_pages(total_page_input):
+            self.timer_cm.shift(30)
             show_more_button = await self.page.J('#showMore')
             if not show_more_button:
                 break
@@ -44,7 +45,7 @@ class FoodCity(BrowserStore):
             except Exception:
                 break
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
             current_page += 1
 
         items = await self.page.JJ('.tile-item__product')

@@ -78,7 +78,11 @@ class Store(BaseModel):
         )
 
     def check_current_data(self):
-        wb = load_workbook(self.excel_file_path)
+        try:
+            wb = load_workbook(self.excel_file_path)
+        except (BadZipFile, KeyError, FileNotFoundError):
+            return False
+
         if self._store_name not in wb.sheetnames:
             return False
 

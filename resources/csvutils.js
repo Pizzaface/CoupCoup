@@ -1,24 +1,28 @@
-function loadStoreSheetAndMatchupSheet(store_name) {
-    const camelCaseStoreName = store_name.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-        return index == 0 ? word.toLowerCase() : word.toUpperCase();
-    }).replace(/\s+/g, '');
-  $("#sheetModalLabel").text(camelCaseStoreName);
-  $("#contents").empty();
+function loadStoreSheetAndMatchupSheet(storeName) {
+  $("#sheetModalLabel").text(
+    storeName.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index === 0 ? word.toUpperCase() : " " + word.toUpperCase();
+    }),
+  );
+  let modalContents = $("#contents");
+  modalContents.empty();
+
+  let lowerCaseStoreName = storeName.toLowerCase();
 
   try {
-    loadSheet('stores/' + store_name + '.csv');
+    loadSheet("stores/" + lowerCaseStoreName + "-matchups.csv", true);
   } catch (e) {
-    $("#contents").html(
+    console.log("No matchups sheet found for " + lowerCaseStoreName + ".");
+  }
+
+  try {
+    loadSheet("stores/" + lowerCaseStoreName + ".csv");
+  } catch (e) {
+    modalContents.html(
       '<div class="alert alert-danger">Error loading sheet: ' +
         e.message +
         "</div>",
     );
-  }
-
-  try {
-    loadSheet('stores/' + store_name + '-matchups.csv', true);
-  } catch (e) {
-      console.log("No matchups sheet found for " + store_name + ".")
   }
 }
 
@@ -71,7 +75,7 @@ function loadSheet(filename, isMatchup = false) {
 
               var row = `
                     <div class="coupon-card">
-                        ${isMatchup ? '<div class="coupon-matchup">Matchup</div>' : ''}
+                        ${isMatchup ? '<div class="coupon-matchup">Matchup</div>' : ""}
                         <div class="coupon-header">${header}</div>
                         ${header === product || product.length < 1 ? "" : `<small>${product}</small>`}
                         <br />

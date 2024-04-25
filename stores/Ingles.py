@@ -82,6 +82,7 @@ class Ingles(BrowserStore):
 
             for product in products:
                 desc_text, price_text, title_text = await self.handle_item(product)
+                self.timer_cm.shift(15)
 
                 self.processing_queue.append(
                     {

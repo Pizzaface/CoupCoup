@@ -63,5 +63,6 @@ class HEB(Store):
             headers['referer'] = prev_page
             await self.process_page(f'{url}{page}', headers)
             prev_page = f'{url}{page}'
+            self.timer_cm.shift(45)
 
         await self.process_queue()

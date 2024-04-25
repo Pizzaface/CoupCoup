@@ -14,7 +14,7 @@ from loguru import logger
 from openrouteservice import geocode, directions
 from rapidfuzz import fuzz
 
-from __main__ import modal_html, extra_script
+from utils.constants import modal_html, extra_script
 from stores.lib.constants import POSSIBLE_STORE_COLORS
 from utils.config import get_config
 
@@ -269,7 +269,7 @@ def add_markers_to_map(
             store_colors[store_name] = random.choice(POSSIBLE_STORE_COLORS)
 
         for i, loc in enumerate(locs):
-            html_text = f"""<a href='#' onclick="loadStoreSheetAndMatchupSheet('{store_name.lower()}')" data-bs-toggle="modal" data-bs-target="#sheetModal">{store_name}</a>"""
+            html_text = f"""<a href='#' onclick="loadStoreSheetAndMatchupSheet('{store_name}')" data-bs-toggle="modal" data-bs-target="#sheetModal">{store_name}</a>"""
 
             tooltip = folium.map.Popup(html=html_text, max_width=2650)
 

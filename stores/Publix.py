@@ -53,6 +53,7 @@ class Publix(BrowserStore):
 
             tasks = [self.handle_item(item) for item in items]
             await asyncio.gather(*tasks, return_exceptions=True)
+            self.timer_cm.shift(30)
 
         await self.browser.close()
         await self.process_queue()

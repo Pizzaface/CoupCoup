@@ -4,7 +4,7 @@ from branca.element import Element, CssLink
 from jinja2 import Template
 import os
 
-from offline_folium.paths import dest_path
+from .paths import dest_path
 
 
 class Link(Element):
