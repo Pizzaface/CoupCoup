@@ -141,6 +141,28 @@ class Store(BaseModel):
         ws.append(self.get_title_header())
         wb.save(self.excel_file_path)
 
+    def add_rows_to_store_worksheet(self, data: List[Dict]):
+        rows = []
+        for row in data:
+            rows.append(
+                {
+                    col: row.get(col, 'N/A')
+                    if col not in ['requires_store_card']
+                    else bool(row.get(col))
+                    for col in self.headers
+                }
+            )
+
+        book = load_workbook(self.excel_file_path)
+        sheet = book[self._store_name]
+
+        df = pd.DataFrame(rows)
+
+        for row_obj in dataframe_to_rows(df, index=False, header=False):
+            sheet.append(row_obj)
+
+        book.save(self.excel_file_path)
+
     def add_row_to_store_worksheet(self, data: Dict):
         row = {
             col: data.get(col, 'N/A')
@@ -248,6 +270,7 @@ class Store(BaseModel):
         self.pbar.set_description(f'Processing {self._store_name}')
         self.pbar.refresh()
 
+        rows_to_add = []
         self.timer_cm.shift(20 * len(tasks))
         async with aiometer.amap(async_fn=extract_products_using_gemini, args=tasks, max_at_once=self.items_at_once) as results:
             async for result_obj in results:
@@ -276,8 +299,6 @@ class Store(BaseModel):
                     )
                     reprocess_queue.extend(user_input)
                     continue
-
-                rows_to_add = []
                 for i, product in enumerate(products):
                     if all(
                         [
@@ -304,12 +325,11 @@ class Store(BaseModel):
                         rows_to_add.append(product)
 
                     try:
-                        self.logger.debug(
-                            f'Adding product to Excel: {product["brand_name"]} {product["product_name"]}'
-                        )
                         if len(rows_to_add) >= 30:
-                            for row in rows_to_add:
-                                self.add_row_to_store_worksheet(row)
+                            self.logger.info(
+                                f'Adding {len(rows_to_add)} rows to {self._store_name} worksheet'
+                            )
+                            self.add_rows_to_store_worksheet(rows_to_add)
 
                             rows_to_add = []
 
@@ -320,8 +340,11 @@ class Store(BaseModel):
                         )
                         reprocess_queue.extend(user_input)
 
-                for row in rows_to_add:
-                    self.add_row_to_store_worksheet(row)
+        if rows_to_add:
+            self.logger.info(
+                f'Adding {len(rows_to_add)} rows to {self._store_name} worksheet'
+            )
+            self.add_rows_to_store_worksheet(rows_to_add)
 
         if reprocess_queue and not is_reprocess:
             self.processing_queue = reprocess_queue

@@ -134,7 +134,6 @@ class Flipp(Store, ABC):
             return await self.handle_flyers(is_retry=True)
 
         for flyer in flyers:
-
             if (
                 flyer['name'] not in WEEKLY_AD_NAMES
                 and flyer['external_display_name'] not in WEEKLY_AD_NAMES
@@ -143,7 +142,6 @@ class Flipp(Store, ABC):
 
             self.flyer_ids_to_process.append(flyer['id'])
 
-        # Gather all handle_product tasks
         tasks = []
         for flyer_id in self.flyer_ids_to_process:
             self.current_flyer_id = flyer_id
@@ -151,7 +149,6 @@ class Flipp(Store, ABC):
             async for product in self.grab_sales():
                 tasks.append(self.handle_product(product))
 
-        # Use more_itertools.chunked to split tasks into batches (e.g., of size 10)
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         for result in results:
@@ -167,7 +164,6 @@ class Flipp(Store, ABC):
         if product['item_type'] not in [1]:
             return None
 
-        # Add the disclaimer to the product description
         if product.get('disclaimer_text'):
             product[
                 'description'

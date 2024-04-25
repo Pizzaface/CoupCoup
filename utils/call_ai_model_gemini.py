@@ -256,7 +256,23 @@ async def make_vertex_gemini_call(
                 tools=[Tool.from_dict(tool_def)],
             )
         except Exception as e:
-            logger.error(f'Gemini returned an invalid response. Error: {e}')
+            if '429' in str(e):
+                logger.warning(
+                    f'Gemini returned a 429 error. Waiting 60 seconds before retrying.'
+                )
+                await asyncio.sleep(60)
+
+            elif retry == MAX_RETRIES - 1:
+                logger.warning(
+                    f'Gemini returned an invalid response on last retry. Error: {e}'
+                )
+                raise e
+            else:
+                logger.warning(
+                    f'Gemini returned an invalid response (retry {retry}). Error: {e}'
+                )
+                await asyncio.sleep(3)
+
             retry += 1
             continue
 

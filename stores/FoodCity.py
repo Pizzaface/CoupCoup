@@ -28,7 +28,7 @@ class FoodCity(BrowserStore):
             raise Exception('FoodCity store code not found in config')
 
     async def handle_flyers(self):
-        await self.load_page()
+        await self.load_page(wait_until='domcontentloaded')
         await self.page.waitForSelector('#hdnPageCount')
         total_page_input = await self.page.J('#hdnPageCount')
 
@@ -45,8 +45,9 @@ class FoodCity(BrowserStore):
             except Exception:
                 break
 
-            await asyncio.sleep(2)
+            self.logger.debug(f'Loading page {current_page}')
             current_page += 1
+            await asyncio.sleep(1)
 
         items = await self.page.JJ('.tile-item__product')
 
