@@ -43,8 +43,8 @@ async def main():
     Path('output/stores').mkdir(exist_ok=True, parents=True)
     section = _setup_config()
 
-    # await _handle_stores(section)
-    # await _handle_coupons(section)
+    await _handle_stores(section)
+    await _handle_coupons(section)
 
     await _compare_products()
     await determine_store_paths()
