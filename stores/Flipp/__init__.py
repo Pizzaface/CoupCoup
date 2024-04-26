@@ -18,6 +18,7 @@ from .JewelOsco import JewelOsco
 from .FredMeyer import FredMeyer
 from .Sprouts import Sprouts
 from .StopAndShop import StopAndShop
+from .HEB import HEB
 
 __all__ = [
     'CVS',
@@ -39,5 +40,6 @@ __all__ = [
     'JewelOsco',
     'FredMeyer',
     'Sprouts',
-    'StopAndShop'
+    'StopAndShop',
+    'HEB'
 ]
