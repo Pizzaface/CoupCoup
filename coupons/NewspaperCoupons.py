@@ -29,7 +29,6 @@ class NewspaperCoupons(CouponBaseStore):
         return self._store_name
 
     async def scrape(self):
-        all_cells = []
         # Make a request to the website and get the HTML content
         page_content = await self.fetch(self.url)
 
@@ -59,36 +58,11 @@ class NewspaperCoupons(CouponBaseStore):
             )
 
         # Loop through each response and extract the data
-        await self._clean_coupons(all_cells, responses)
+        await self._clean_coupons(responses)
 
-        for cell_chunk in chunked(all_cells, 2):
-            tasks = [
-                extract_products_using_gemini(
-                    GeminiCallInput(
-                        user_input=cell_chunk,
-                        logger=self.logger,
-                        prompt_jinja_template_path='get_individual_products.jinja'
-                    )
-                )
-            ]
-            results = await asyncio.gather(*tasks, return_exceptions=True)
+        await self.process_queue()
 
-            for i, results in enumerate(results):
-                if isinstance(results, Exception):
-                    self.logger.error(f'Error handling product: {results}')
-                    continue
-
-                products, user_input = results
-
-                for prd_id, product in enumerate(products):
-                    if not product.get('brand_name'):
-                        product['brand_name'] = cell_chunk[prd_id]['raw_text']
-
-                    product['valid_from'] = 'N/A'
-                    product['requires_store_card'] = False
-                    self.add_row_to_store_worksheet(product)
-
-    async def _clean_coupons(self, all_cells, responses):
+    async def _clean_coupons(self, responses):
         for response in responses:
             html_content = response.content
             soup = BeautifulSoup(
@@ -119,13 +93,32 @@ class NewspaperCoupons(CouponBaseStore):
                 else:
                     continue
 
-                all_cells.append(
+                if not cells:
+                    continue
+
+                elif len(cells) == 1:
+                    self.processing_queue.append(
+                        {
+                            'raw_text': cells[0].text,
+                            'sale_amount_off': 'N/A',
+                            'required_purchase_quantity': 'N/A',
+                            'deal_type': 'COUPON',
+                            'valid_from': datetime.today().strftime('%Y-%m-%d'),
+                            'valid_to': exp.strftime('%Y-%m-%d'),
+                        }
+                    )
+                    continue
+
+                sale_amount_off = 'N/A'
+                required_purchase_quantity = 'N/A'
+                if cells[1] and '/' in cells[1].text:
+                    sale_amount_off, required_purchase_quantity = cells[1].text.split('/')
+
+                self.processing_queue.append(
                     {
-                        'raw_text': cells[0].text,
-                        'sale_amount_off': cells[1].text.split('/')[0],
-                        'required_purchase_quantity': cells[1].text.split('/')[
-                            1
-                        ],
+                        'raw_text': cells[0].text + ' ' + cells[1].text,
+                        'sale_amount_off': sale_amount_off,
+                        'required_purchase_quantity': required_purchase_quantity,
                         'deal_type': 'COUPON',
                         'valid_from': datetime.today().strftime('%Y-%m-%d'),
                         'valid_to': exp.strftime('%Y-%m-%d'),

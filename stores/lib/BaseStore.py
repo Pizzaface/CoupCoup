@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+from pathlib import Path
 from typing import Dict, List
 from zipfile import BadZipFile
 
@@ -171,8 +172,14 @@ class Store(BaseModel):
             for col in self.headers
         }
 
-        book = load_workbook(self.excel_file_path)
-        sheet = book[self._store_name]
+        if not Path(self.excel_file_path).exists():
+            book = Workbook()
+            sheet = book.active
+            sheet.title = self._store_name
+            sheet.append(self.get_title_header())
+        else:
+            book = load_workbook(self.excel_file_path)
+            sheet = book[self._store_name]
 
         df = pd.DataFrame([row])
 
@@ -254,7 +261,7 @@ class Store(BaseModel):
         self.logger.info(f'Processing {len(self.processing_queue)} items')
         # Process the queue asynchronously and write to the Excel sheet
         reprocess_queue = []
-        chunked_queue = [chunk for chunk in chunked(self.processing_queue, 2)]
+        chunked_queue = [chunk for chunk in chunked(self.processing_queue, 4)]
         tasks = []
 
         for batch in chunked_queue:
@@ -325,7 +332,7 @@ class Store(BaseModel):
                         rows_to_add.append(product)
 
                     try:
-                        if len(rows_to_add) >= 30:
+                        if len(rows_to_add) >= 100:
                             self.logger.info(
                                 f'Adding {len(rows_to_add)} rows to {self._store_name} worksheet'
                             )

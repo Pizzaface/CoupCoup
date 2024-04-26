@@ -85,9 +85,7 @@ class DollarGeneralCoupons(CouponBaseStore):
                         'deal_type': 'COUPON'
                         if coupon.get('IsManufacturerCoupon', -1) == 0
                         else 'MANUFACTURER_COUPON',
-                        'description': coupon.get('OfferDescription', '')
-                        + ' '
-                        + coupon.get('OfferDisclaimer', ''),
+                        'description': coupon.get('OfferDescription', ''),
                         'valid_from': coupon.get('OfferActivationDate', 'N/A'),
                         'valid_to': coupon.get('OfferExpirationDate', 'N/A'),
                     }
