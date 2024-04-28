@@ -7,6 +7,8 @@ CoupCoup
 <span align="center">
   
 An automated money ~~making~~ saving machine, powered by AI
+
+_Saving Money is **NEVER** Coo-Coo!_
   
 </span>
 

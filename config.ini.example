@@ -3,6 +3,10 @@
 ;GOOGLE_API_KEY: <YOUR_GOOGLE_AI_STUDIO_API_KEY>
 ;GOOGLE_PROJECT_ID: <YOUR_GOOGLE_PROJECT_ID>
 
+; Concurrency Settings
+stores_at_once: 2
+items_at_once: 20
+
 ; This defines the list of coupon sources that are supported, provided as a JSON Array (double quotes required)
 COUPON_SOURCES: ["ShopRite", "DollarGeneral", "Newspaper", "Kroger", "FamilyDollar", "Meijer", "FredMeyer", "FrysFood", "CouponsCom", "FoodCity", "FoodLion"]
 
