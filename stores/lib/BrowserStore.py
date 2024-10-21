@@ -4,12 +4,12 @@ from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page
 
-from stores.lib.BaseStore import Store
+from stores.lib.BaseStore import StoreBase
 from tqdm.asyncio import tqdm as tqdm_asyncio
 from async_timeout import timeout
 
 
-class BrowserStore(Store):
+class BrowserStore(StoreBase):
     _browser: None | Browser = None
     _page: None | Page = None
     headless: bool = True

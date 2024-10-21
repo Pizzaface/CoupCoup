@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from functools import lru_cache
 from json import JSONDecodeError
 from typing import Any, Tuple, TypedDict
 
@@ -87,13 +88,13 @@ tool_def = {
                                     'description': 'The description of the sale or coupon',
                                 },
                                 'required_purchase_quantity': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The minimum NUMBER of items of that product that must be purchased to get the deal - i.e. 2 for $5 would be 2, 1 for $5 would be 1',
                                 },
                                 'required_purchase_amount': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The minimum amount of money that must be spent to get the deal - i.e. $5 off $20 would be 20',
@@ -105,7 +106,7 @@ tool_def = {
                                     'description': "The price of the product, if it is on sale, or a price is given, can include modifiers like 'each' or 'lb'",
                                 },
                                 'sale_percent_off': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The percent off of the product, if its a PERCENT_OFF deal',
@@ -123,25 +124,25 @@ tool_def = {
                                     'description': 'The sale price of the product, if its a SALE_PRICE deal',
                                 },
                                 'quantity_at_sale_price': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The amount of products you get at a sale price, if its a BUY_X_GET_Y_AT_Z_AMO_OFF deal',
                                 },
                                 'quantity_get_free': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The amount of products you get for free, if its a BUY_X_GET_Y_FREE deal - i.e. buy 1 get 1 free, buy 2 get 1 free, etc.',
                                 },
                                 'quantity_percent_off': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The amount of products you get at a percent off, if its a BUY_X_GET_Y_AT_Z_PER_OFF deal',
                                 },
                                 'quantity_at_amount_off': {
-                                    'type_': 'NUMBER',
+                                    'type_': 'INTEGER',
                                     'format': 'int32',
                                     'nullable': False,
                                     'description': 'The amount of products you get at an amount off, if its a BUY_X_GET_Y_AT_Z_AMO_OFF deal',

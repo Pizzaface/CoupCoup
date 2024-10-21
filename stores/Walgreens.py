@@ -6,10 +6,10 @@ import dateutil.parser
 import httpx
 
 from utils.config import get_config
-from .lib.BaseStore import Store
+from .lib.BaseStore import StoreBase
 
 
-class Walgreens(Store):
+class Walgreens(StoreBase):
     _store_name: str = 'walgreens'
     url: str = 'https://www.walgreens.com/storelistings/storesbystore.jsp'
     processing_queue: list[dict] = []

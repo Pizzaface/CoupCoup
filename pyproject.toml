@@ -1,35 +1,45 @@
-[tool.poetry]
+[project]
 name = "aicoupcoup"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
-readme = "README.md"
+requires-python = "==3.11.6"
+dependencies = [
+    'aioitertools==0.11.0',
+    'aiometer==0.5.0',
+    'async-timeout==4.0.3',
+    'asyncstdlib',
+    'beautifulsoup4',
+    'folium==0.16.0',
+    'google-cloud-aiplatform>=1.38',
+    'google-generativeai==0.4.1',
+    'httpx',
+    'jinja2',
+    'loguru==0.7.2',
+    'more-itertools==10.1.0',
+    'openpyxl==3.1.2',
+    'openrouteservice==2.3.3',
+    'orjson==3.10.0',
+    'pandas==2.2.1',
+    'pydantic',
+    'pyppeteer==1.0.2',
+    'rapidfuzz==3.7.0',
+    "sqlalchemy==2.0.30",
+    "sqlmodel>=0.0.22",
+    'tdqm',
+    'thefuzz',
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-httpx = "*"
-pydantic = "*"
-jinja2 = "*"
-asyncstdlib = "*"
-beautifulsoup4 = "*"
-thefuzz = "*"
-tdqm = "*"
-pyppeteer = "^1.0.2"
-more-itertools = "^10.1.0"
-aioitertools = "^0.11.0"
-google-cloud-aiplatform = ">=1.38"
-google-generativeai = "^0.4.1"
-loguru = "^0.7.2"
-openrouteservice = "^2.3.3"
-folium = "^0.16.0"
-pandas = "^2.2.1"
-rapidfuzz = "^3.7.0"
-openpyxl = "^3.1.2"
-orjson = "^3.10.0"
-aiometer = "^0.5.0"
-async-timeout = "^4.0.3"
+[project.optional-dependencies]
 
+# Single Quotes for ruff
+[tool.ruff.format]
+quote-style = "single"
+exclude = ["../custom_packages/*"]
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff]
+fix = true
+line-length = 200
+
+[tool.ruff.lint]
+exclude = ["../custom_packages/*"]
+

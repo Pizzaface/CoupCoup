@@ -7,12 +7,12 @@ import httpx as httpx
 from abc import ABC
 
 from dateutil.parser import parse
-from stores.lib.BaseStore import Store
+from stores.lib.BaseStore import StoreBase
 from stores.lib.constants import WEEKLY_AD_NAMES
 from utils.text import clean_text
 
 
-class Flipp(Store, ABC):
+class Flipp(StoreBase, ABC):
     access_token: str | None = None
     store_code: str | None = None
     current_flyer_id: int | None = None
