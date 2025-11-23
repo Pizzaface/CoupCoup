@@ -30,6 +30,8 @@ jobs:
         pip install more-itertools aioitertools async-timeout thefuzz tqdm
 
     - name: Generate coverage report
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/unit/utils/test_text.py \
                tests/unit/utils/test_config.py \

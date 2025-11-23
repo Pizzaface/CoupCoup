@@ -49,6 +49,8 @@ jobs:
         pip install openrouteservice || echo "Skipping openrouteservice"
 
     - name: Run tests with coverage
+      env:
+        PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/ \
           --cov=. \
