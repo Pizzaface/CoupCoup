@@ -2,3 +2,23 @@ config.ini
 /output/
 .idea/
 directions.html
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
