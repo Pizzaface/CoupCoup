@@ -28,7 +28,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
           build-essential \
-          python3-dev
+          python3-dev \
+          libffi-dev \
+          pkg-config \
+          cargo \
+          rustc
 
     - name: Install Python dependencies
       run: |
@@ -39,14 +43,11 @@ jobs:
         pip install aiometer loguru rapidfuzz beautifulsoup4
         pip install python-dateutil asyncstdlib orjson more-itertools aioitertools
         pip install async-timeout thefuzz tqdm
-
-    - name: Install optional dependencies (best effort)
-      continue-on-error: true
-      run: |
-        pip install google-generativeai || echo "Skipping google-generativeai"
-        pip install google-cloud-aiplatform || echo "Skipping google-cloud-aiplatform"
-        pip install folium || echo "Skipping folium"
-        pip install openrouteservice || echo "Skipping openrouteservice"
+        pip install pyppeteer
+        pip install google-generativeai
+        pip install google-cloud-aiplatform
+        pip install folium
+        pip install openrouteservice
 
     - name: Run tests with coverage
       env:
