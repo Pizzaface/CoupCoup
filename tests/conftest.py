@@ -230,9 +230,13 @@ def mock_flipp_products_response():
             'brand': 'Test Brand',
             'description': 'Test description',
             'price_text': '$4.99',
+            'pre_price_text': '$5.99',
+            'sale_story': 'Great deal on Test Product',
             'valid_from': '2024-01-01T00:00:00',
             'valid_to': '2024-01-07T23:59:59',
             'current_price': 4.99,
+            'sku': 'TEST-SKU-123',
+            'item_type': 'item',
         }
     ]
 
