@@ -1,0 +1,97 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master, develop, claude/* ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          build-essential \
+          python3-dev
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-asyncio pytest-cov pytest-mock pytest-timeout
+        pip install factory-boy faker respx freezegun
+        pip install pandas openpyxl httpx pydantic jinja2
+        pip install aiometer loguru rapidfuzz beautifulsoup4
+        pip install python-dateutil asyncstdlib orjson more-itertools aioitertools
+        pip install async-timeout thefuzz tqdm
+
+    - name: Install optional dependencies (best effort)
+      continue-on-error: true
+      run: |
+        pip install google-generativeai || echo "Skipping google-generativeai"
+        pip install google-cloud-aiplatform || echo "Skipping google-cloud-aiplatform"
+        pip install folium || echo "Skipping folium"
+        pip install openrouteservice || echo "Skipping openrouteservice"
+
+    - name: Run tests with coverage
+      run: |
+        pytest tests/ \
+          --cov=. \
+          --cov-report=xml \
+          --cov-report=term-missing \
+          --cov-report=html \
+          -v \
+          --tb=short \
+          --maxfail=5
+      continue-on-error: false
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Upload coverage report as artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report-${{ matrix.python-version }}
+        path: |
+          coverage.xml
+          htmlcov/
+        retention-days: 30
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          .pytest_cache/
+        retention-days: 7
+
+    - name: Comment coverage on PR
+      if: github.event_name == 'pull_request'
+      uses: py-cov-action/python-coverage-comment-action@v3
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        MINIMUM_GREEN: 80
+        MINIMUM_ORANGE: 60

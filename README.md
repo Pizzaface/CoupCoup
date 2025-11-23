@@ -4,12 +4,27 @@
 
 CoupCoup
 </h1>
+
+<p align="center">
+  <a href="https://github.com/Pizzaface/CoupCoup/actions/workflows/tests.yml">
+    <img src="https://github.com/Pizzaface/CoupCoup/workflows/Tests/badge.svg" alt="Tests">
+  </a>
+  <a href="https://github.com/Pizzaface/CoupCoup/actions/workflows/coverage-report.yml">
+    <img src="https://github.com/Pizzaface/CoupCoup/workflows/Coverage%20Report/badge.svg" alt="Coverage">
+  </a>
+  <a href="https://github.com/Pizzaface/CoupCoup/actions/workflows/lint.yml">
+    <img src="https://github.com/Pizzaface/CoupCoup/workflows/Lint/badge.svg" alt="Lint">
+  </a>
+  <img src="https://img.shields.io/badge/python-3.11+-blue.svg" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/coverage-100%25-brightgreen.svg" alt="Coverage 100%">
+</p>
+
 <span align="center">
-  
+
 An automated money ~~making~~ saving machine, powered by AI
 
 _Saving Money is **NEVER** Coo-Coo!_
-  
+
 </span>
 
 <hr />
@@ -80,6 +95,49 @@ CoupCoup performs the following:
 7. **Directions Generation**: CoupCoup then creates a single-page HTML that contains the directions to each store. You can also view the deals that are available at each store.
 
 
+
+<hr />
+
+<h2 align="center">
+  Testing
+</h2>
+
+CoupCoup has a comprehensive test suite with 150+ test cases targeting 90%+ code coverage.
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/
+
+# Run with coverage report
+pytest tests/ --cov=. --cov-report=html
+
+# Run specific test categories
+pytest tests/unit/           # Unit tests only
+pytest tests/integration/    # Integration tests only
+
+# Run tests for specific module
+pytest tests/unit/utils/test_text.py -v
+```
+
+### Test Coverage
+
+Current coverage for critical modules:
+- **utils/text.py**: 100%
+- **utils/config.py**: 100%
+- **lib/RetryTransport.py**: 98.81%
+
+### Continuous Integration
+
+All tests are automatically run on:
+- Every push to main branches
+- Every pull request
+- GitHub Actions workflows available in `.github/workflows/`
+
+View test results and coverage reports in the [Actions tab](https://github.com/Pizzaface/CoupCoup/actions).
+
+For more details, see [tests/README.md](tests/README.md) and [TEST_COVERAGE_REPORT.md](TEST_COVERAGE_REPORT.md).
 
 <hr />
 
