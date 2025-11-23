@@ -77,11 +77,15 @@ class FlippProductFactory(Factory):
     brand = Faker('company')
     description = Faker('sentence')
     price_text = LazyAttribute(lambda o: f"${fake.pyfloat(left_digits=2, right_digits=2, positive=True, min_value=0.5, max_value=50.0)}")
+    pre_price_text = LazyAttribute(lambda o: f"${fake.pyfloat(left_digits=2, right_digits=2, positive=True, min_value=5.0, max_value=60.0)}")
+    sale_story = Faker('sentence')
     valid_from = LazyAttribute(lambda o: datetime.now().isoformat())
     valid_to = LazyAttribute(
         lambda o: (datetime.now() + timedelta(days=7)).isoformat()
     )
     current_price = Faker('pyfloat', left_digits=2, right_digits=2, positive=True, min_value=0.5, max_value=50.0)
+    sku = Faker('bothify', text='SKU-????-####')
+    item_type = Faker('random_element', elements=('item', 'category', 'bundle'))
 
 
 class StoreConfigFactory(Factory):

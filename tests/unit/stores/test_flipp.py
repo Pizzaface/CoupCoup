@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from stores.Flipp.Flipp import Flipp
+from tests.factories import FlippProductFactory
 
 
 class TestFlippInit:
@@ -265,17 +266,7 @@ class TestFlippGrabSales:
             store.current_flyer_id = 123456
 
             # Mock response with price_text
-            mock_products = [
-                {
-                    'name': 'Product',
-                    'brand': 'Brand',
-                    'price_text': '$4.99',
-                    'pre_price_text': '$5.99',
-                    'sale_story': 'Test sale',
-                    'valid_from': '2024-01-01T00:00:00',
-                    'valid_to': '2024-01-07T23:59:59',
-                },
-            ]
+            mock_products = [FlippProductFactory(price_text='$4.99')]
 
             mock_response = AsyncMock()
             mock_response.status_code = 200
@@ -309,17 +300,7 @@ class TestFlippGrabSales:
             store.current_flyer_id = 123456
 
             # Mock response with dates
-            mock_products = [
-                {
-                    'name': 'Product',
-                    'brand': 'Brand',
-                    'price_text': '4.99',
-                    'pre_price_text': '5.99',
-                    'sale_story': 'Test sale',
-                    'valid_from': '2024-01-01T00:00:00',
-                    'valid_to': '2024-01-07T23:59:59',
-                },
-            ]
+            mock_products = [FlippProductFactory(price_text='4.99')]
 
             mock_response = AsyncMock()
             mock_response.status_code = 200
@@ -353,17 +334,7 @@ class TestFlippGrabSales:
             store.current_flyer_id = 123456
 
             # Mock response with invalid price
-            mock_products = [
-                {
-                    'name': 'Product',
-                    'brand': 'Brand',
-                    'price_text': 'FREE',
-                    'pre_price_text': '5.99',
-                    'sale_story': 'Test sale',
-                    'valid_from': '2024-01-01T00:00:00',
-                    'valid_to': '2024-01-07T23:59:59',
-                },
-            ]
+            mock_products = [FlippProductFactory(price_text='FREE')]
 
             mock_response = AsyncMock()
             mock_response.status_code = 200

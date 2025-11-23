@@ -87,26 +87,8 @@ def temp_excel_file(tmp_path):
 @pytest.fixture
 def sample_product_data():
     """Sample product data for testing."""
-    return {
-        'brand_name': 'Test Brand',
-        'product_name': 'Test Product',
-        'product_variety': '12 oz',
-        'description': 'Test description',
-        'required_purchase_quantity': 1,
-        'required_purchase_amount': 0,
-        'price': 4.99,
-        'sale_percent_off': 0,
-        'sale_amount_off': 0,
-        'sale_price': 3.99,
-        'quantity_at_sale_price': 1,
-        'quantity_get_free': 0,
-        'quantity_percent_off': 0,
-        'quantity_at_amount_off': 0,
-        'deal_type': 'SALE_PRICE',
-        'requires_store_card': False,
-        'valid_from': '2024-01-01',
-        'valid_to': '2024-01-07',
-    }
+    from tests.factories import ProductFactory
+    return ProductFactory()
 
 
 @pytest.fixture
@@ -210,60 +192,22 @@ def mock_workbook(tmp_path):
 @pytest.fixture
 def mock_flipp_flyers_response():
     """Mock Flipp API flyers response."""
-    return [
-        {
-            'id': 123456,
-            'name': 'Weekly Ad',
-            'valid_from': '2024-01-01T00:00:00',
-            'valid_to': '2024-01-07T23:59:59',
-            'storefront_ids': [1, 2, 3],
-        }
-    ]
+    from tests.factories import FlippFlyerFactory
+    return [FlippFlyerFactory()]
 
 
 @pytest.fixture
 def mock_flipp_products_response():
     """Mock Flipp API products response."""
-    return [
-        {
-            'name': 'Test Product',
-            'brand': 'Test Brand',
-            'description': 'Test description',
-            'price_text': '$4.99',
-            'pre_price_text': '$5.99',
-            'sale_story': 'Great deal on Test Product',
-            'valid_from': '2024-01-01T00:00:00',
-            'valid_to': '2024-01-07T23:59:59',
-            'current_price': 4.99,
-            'sku': 'TEST-SKU-123',
-            'item_type': 'item',
-        }
-    ]
+    from tests.factories import FlippProductFactory
+    return [FlippProductFactory()]
 
 
 @pytest.fixture
 def sample_coupon_data():
     """Sample coupon data for testing."""
-    return {
-        'brand_name': 'Coupon Brand',
-        'product_name': 'Coupon Product',
-        'product_variety': 'Any variety',
-        'description': 'Save $1.00',
-        'required_purchase_quantity': 1,
-        'required_purchase_amount': 0,
-        'price': 0,
-        'sale_percent_off': 0,
-        'sale_amount_off': 1.00,
-        'sale_price': 0,
-        'quantity_at_sale_price': 0,
-        'quantity_get_free': 0,
-        'quantity_percent_off': 0,
-        'quantity_at_amount_off': 1,
-        'deal_type': 'AMOUNT_OFF',
-        'requires_store_card': False,
-        'valid_from': '2024-01-01',
-        'valid_to': '2024-03-31',
-    }
+    from tests.factories import CouponFactory
+    return CouponFactory()
 
 
 @pytest.fixture
