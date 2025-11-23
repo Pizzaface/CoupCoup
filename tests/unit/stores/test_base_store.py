@@ -3,6 +3,7 @@ Tests for stores/lib/BaseStore.py module.
 """
 import os
 from pathlib import Path
+from typing import List
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 from zipfile import BadZipFile
 
@@ -111,7 +112,7 @@ class TestStoreExcelMethods:
         with patch('stores.lib.BaseStore.get_config', return_value=mock_config):
             class TestStore(Store):
                 _store_name = 'test-store'
-                headers = ['brand_name', 'product_name', 'sale_price']
+                headers: List[str] = ['brand_name', 'product_name', 'sale_price']
 
             store = TestStore(mock_timer_cm)
             title_headers = store.get_title_header()
@@ -126,7 +127,7 @@ class TestStoreExcelMethods:
         with patch('stores.lib.BaseStore.get_config', return_value=mock_config):
             class TestStore(Store):
                 _store_name = 'test-store'
-                headers = ['brand_name', 'product_name']
+                headers: List[str] = ['brand_name', 'product_name']
 
             store = TestStore(mock_timer_cm)
             store.reset_worksheet()
@@ -154,7 +155,7 @@ class TestStoreExcelMethods:
         with patch('stores.lib.BaseStore.get_config', return_value=mock_config):
             class TestStore(Store):
                 _store_name = 'test-store'
-                headers = ['brand_name', 'product_name']
+                headers: List[str] = ['brand_name', 'product_name']
 
             store = TestStore(mock_timer_cm)
             store.reset_worksheet()

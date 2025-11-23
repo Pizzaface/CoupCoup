@@ -51,6 +51,7 @@ class RetryTransport(httpx.AsyncBaseTransport, httpx.BaseTransport):
     RETRYABLE_STATUS_CODES = frozenset(
         [
             HTTPStatus.TOO_MANY_REQUESTS,
+            HTTPStatus.INTERNAL_SERVER_ERROR,
             HTTPStatus.BAD_GATEWAY,
             HTTPStatus.SERVICE_UNAVAILABLE,
             HTTPStatus.GATEWAY_TIMEOUT,
@@ -197,7 +198,7 @@ class RetryTransport(httpx.AsyncBaseTransport, httpx.BaseTransport):
         retry_after_header = (headers.get('Retry-After') or '').strip()
         if self._respect_retry_after_header and retry_after_header:
             if retry_after_header.isdigit():
-                return float(retry_after_header)
+                return min(float(retry_after_header), self._max_backoff_wait)
 
             try:
                 parsed_date = isoparse(
@@ -221,37 +222,33 @@ class RetryTransport(httpx.AsyncBaseTransport, httpx.BaseTransport):
         request: httpx.Request,
         send_method: Callable[..., Coroutine[Any, Any, httpx.Response]],
     ) -> httpx.Response:
-        remaining_attempts = self._max_attempts
         attempts_made = 0
-        while True:
+        response = None
+        while attempts_made < self._max_attempts:
             if attempts_made > 0:
                 await asyncio.sleep(self._calculate_sleep(attempts_made, {}))
             response = await send_method(request)
-            if (
-                remaining_attempts < 1
-                or response.status_code not in self._retry_status_codes
-            ):
-                return response
-            await response.aclose()
             attempts_made += 1
-            remaining_attempts -= 1
+            if response.status_code not in self._retry_status_codes:
+                return response
+            if attempts_made < self._max_attempts:
+                await response.aclose()
+        return response
 
     def _retry_operation(
         self,
         request: httpx.Request,
         send_method: Callable[..., httpx.Response],
     ) -> httpx.Response:
-        remaining_attempts = self._max_attempts
         attempts_made = 0
-        while True:
+        response = None
+        while attempts_made < self._max_attempts:
             if attempts_made > 0:
                 time.sleep(self._calculate_sleep(attempts_made, {}))
             response = send_method(request)
-            if (
-                remaining_attempts < 1
-                or response.status_code not in self._retry_status_codes
-            ):
-                return response
-            response.close()
             attempts_made += 1
-            remaining_attempts -= 1
+            if response.status_code not in self._retry_status_codes:
+                return response
+            if attempts_made < self._max_attempts:
+                response.close()
+        return response
