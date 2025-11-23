@@ -223,8 +223,8 @@ class TestStoreExcelMethods:
 
             # Header should be bold
             assert ws['A1'].font.bold is True
-            # Header should have background color
-            assert ws['A1'].fill.fgColor.rgb == '424242'
+            # Header should have background color (openpyxl uses ARGB format)
+            assert ws['A1'].fill.fgColor.rgb == '00424242'
 
     def test_check_current_data_valid(self, mock_config, mock_timer_cm, monkeypatch, tmp_path):
         """Test check_current_data returns True for valid data."""

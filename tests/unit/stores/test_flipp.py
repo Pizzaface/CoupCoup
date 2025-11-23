@@ -147,7 +147,7 @@ class TestFlippGrabFlyers:
             # Mock httpx client
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = mock_flipp_flyers_response
+            mock_response.json = Mock(return_value=mock_flipp_flyers_response)
             mock_response.raise_for_status = Mock()
 
             mock_client = AsyncMock()
@@ -176,7 +176,7 @@ class TestFlippGrabFlyers:
             # First call raises error, second succeeds
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = mock_flipp_flyers_response
+            mock_response.json = Mock(return_value=mock_flipp_flyers_response)
             mock_response.raise_for_status = Mock()
 
             mock_client = AsyncMock()
@@ -236,7 +236,7 @@ class TestFlippGrabSales:
             # Mock httpx client
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = mock_flipp_products_response
+            mock_response.json = Mock(return_value=mock_flipp_products_response)
             mock_response.raise_for_status = Mock()
 
             mock_client = AsyncMock()
@@ -271,7 +271,7 @@ class TestFlippGrabSales:
 
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = mock_products
+            mock_response.json = Mock(return_value=mock_products)
             mock_response.raise_for_status = Mock()
 
             mock_client = AsyncMock()
@@ -313,7 +313,7 @@ class TestFlippGrabSales:
 
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = mock_products
+            mock_response.json = Mock(return_value=mock_products)
             mock_response.raise_for_status = Mock()
 
             mock_client = AsyncMock()
@@ -349,7 +349,7 @@ class TestFlippGrabSales:
 
             mock_response = AsyncMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = mock_products
+            mock_response.json = Mock(return_value=mock_products)
             mock_response.raise_for_status = Mock()
 
             mock_client = AsyncMock()

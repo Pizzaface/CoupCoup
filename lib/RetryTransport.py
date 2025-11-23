@@ -224,14 +224,15 @@ class RetryTransport(httpx.AsyncBaseTransport, httpx.BaseTransport):
     ) -> httpx.Response:
         attempts_made = 0
         response = None
-        while attempts_made < self._max_attempts:
+        max_attempts = max(1, self._max_attempts)  # Ensure at least one attempt
+        while attempts_made < max_attempts:
             if attempts_made > 0:
                 await asyncio.sleep(self._calculate_sleep(attempts_made, {}))
             response = await send_method(request)
             attempts_made += 1
             if response.status_code not in self._retry_status_codes:
                 return response
-            if attempts_made < self._max_attempts:
+            if attempts_made < max_attempts:
                 await response.aclose()
         return response
 
@@ -242,13 +243,14 @@ class RetryTransport(httpx.AsyncBaseTransport, httpx.BaseTransport):
     ) -> httpx.Response:
         attempts_made = 0
         response = None
-        while attempts_made < self._max_attempts:
+        max_attempts = max(1, self._max_attempts)  # Ensure at least one attempt
+        while attempts_made < max_attempts:
             if attempts_made > 0:
                 time.sleep(self._calculate_sleep(attempts_made, {}))
             response = send_method(request)
             attempts_made += 1
             if response.status_code not in self._retry_status_codes:
                 return response
-            if attempts_made < self._max_attempts:
+            if attempts_made < max_attempts:
                 response.close()
         return response
